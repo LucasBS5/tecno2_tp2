@@ -1,4 +1,4 @@
-# Como Github no permite subir tantos archivos a la vez, no está la libreria FISICA, pero cuando la descarguen ponganla en la carpeta como hizo Crhis
+# Como Github no permite subir tantos archivos a la vez, no está la libreria FISICA, pero cuando la descarguen ponganla en la carpeta como hizo Crhis.
 
 El contenido de la carpeta del sketch se tiene que ver asi:
 
