@@ -1,15 +1,16 @@
 class Obstaculo {
   FBox obstaculo;
-  //constructor
-  Obstaculo() {
-    //obstaculo
-    obstaculo=new FBox(200, 200);
-    obstaculo.setPosition(200, 0);
-    obstaculo.setName("obstaculo");
-    //añadir obstaculo mundo
-    mundo.add(obstaculo);
-  }
 
-  void dibujar() {
+  // Constructor que acepta parámetros
+  Obstaculo(float posX, float posY, float tamX, float tamY, String nombre) {
+    obstaculo = new FBox(tamX, tamY);
+    obstaculo.setPosition(posX, posY);
+    obstaculo.setName(nombre);
+    obstaculo.setFill(255, 0, 0);
+    obstaculo.setStatic(true);
+    //rebote
+    obstaculo.setRestitution(0.2);
+    obstaculo.setGrabbable(false);
+    mundo.add(obstaculo);
   }
 }
