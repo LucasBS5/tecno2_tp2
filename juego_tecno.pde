@@ -27,7 +27,8 @@ Enemigo enemigo;
 //crear interfaz
 Interfaz interfaz;
 //crear caminos
-Caminos caminos;
+Camino camino1,camino2,camino3;
+
 
 void setup() {
   //inicializar libreria fisica
@@ -52,14 +53,18 @@ void setup() {
   //item
   item = new Item (random(50, width-50), random(50, height-50), 50, 50, "Item");
   //revisar el tamaño de la caja de colisiones
-  enemigo = new Enemigo(random(50, width-50), random(50, height-50), 150, 150, "Enemigo");
+  enemigo = new Enemigo(random(50, width-50), random(50, height-50), 100, 100, "Enemigo");
   interfaz =new Interfaz();
+  //caminos
+  camino1=new Camino(1);
+  camino2=new Camino(2);
+  camino3=new Camino(3);
 }
 //impulso nave
 
 
 void draw() {
-  background(255);
+  background(0);
 
 
   //mundo

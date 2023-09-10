@@ -9,7 +9,7 @@ class Enemigo {
     enemigo.setGrabbable(false);
     //rebote
     enemigo.setRestitution(0.2);
-    conejo_motosierra.resize(150, 150);
+    conejo_motosierra.resize(100, 100);
     enemigo.attachImage(conejo_motosierra);
     mundo.add(enemigo);
   }

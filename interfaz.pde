@@ -6,7 +6,7 @@ class Interfaz {
   String text_vidas;
   int num_vidas;
   Interfaz() {
-    tiempoInicial = 100; // Tiempo inicial en segundos
+    tiempoInicial = 50; // Tiempo inicial en segundos
     tiempoRestante = tiempoInicial; // Tiempo restante en segundos
     barraAnchoInicial = 400; // Ancho inicial de la barra
     text_vidas ="Vidas: ";
@@ -21,7 +21,7 @@ class Interfaz {
     barraAncho = map(tiempoRestante, 0, tiempoInicial, 0, barraAnchoInicial);
     // Dibujar la barra
     fill(255, 0, 200);
-    rect(width/2, height/18, barraAncho, 20);
+    rect(width/3, height/22, barraAncho, 20);
     pop();
     // Actualizar el tiempo restante
     if (tiempoRestante >0) {
@@ -31,7 +31,7 @@ class Interfaz {
 
   void dibujar_vidas() {
     textSize(30);
-    fill(0);
+    fill(255,0,0);
     if (num_vidas>0 && tiempoRestante>0) {
       text(text_vidas+num_vidas, width/25, height/15);
     }
