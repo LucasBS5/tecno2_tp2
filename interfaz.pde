@@ -15,7 +15,8 @@ class Interfaz {
   void dibujar_Barra_T() {
     barraAncho = barraAnchoInicial; // Ancho actual de la barra
     push();
-    rectMode(CENTER);
+    //tiene que estar en corner porque sino se achican los dos lados
+    rectMode(CORNER);
     // Actualizar el ancho de la barra
     barraAncho = map(tiempoRestante, 0, tiempoInicial, 0, barraAnchoInicial);
     // Dibujar la barra

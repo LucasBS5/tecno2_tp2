@@ -26,7 +26,8 @@ Item item;
 Enemigo enemigo;
 //crear interfaz
 Interfaz interfaz;
-
+//crear caminos
+Caminos caminos;
 
 void setup() {
   //inicializar libreria fisica
@@ -59,6 +60,8 @@ void setup() {
 
 void draw() {
   background(255);
+
+
   //mundo
   mundo.step();
   mundo.draw();
@@ -100,9 +103,9 @@ void contactStarted(FContact contacto) {
 
       // Activa la invulnerabilidad,el tiempo de espera entre activaciones es el tiempo que dura la invulnerabilidad (5s)
       nave.hacerInvulnerable();
+      nave.tiempoEsperaInvulnerabilidad = millis();
       //cambia el color de nave
       body1.setImageAlpha(90);
-      nave.tiempoEsperaInvulnerabilidad = millis();
     }
 
     //cuando la nave choca contra un item

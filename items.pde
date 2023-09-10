@@ -9,6 +9,7 @@ class Item {
     Item.setName(nombre);
     Item.setFill(0, 255, 0);
     Item.setRestitution(0);
+    Item.setSensor(true);
     Item.setStatic(true);
     Item.setGrabbable(false);
     pop();
