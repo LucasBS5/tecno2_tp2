@@ -39,14 +39,14 @@ class Nave {
     //vars visuales
     ancho = 25;
     alto = 50;
-    naveX = width - 200;
+    naveX = 0+100;
     naveY = height - 50;
     nave.setPosition(naveX, naveY);
     nave.setGrabbable(false);
     nave.setName("Nave");
     vidas=5;
     //imagen nave
-    nave_s_fuego.resize(150, 150);
+    nave_s_fuego.resize(90, 90);
     nave.attachImage(nave_s_fuego);
 
     //nave invulnerable el tiempo de espera entre activaciones es el tiempo que dura la invulnerabilidad (5s)

@@ -3,9 +3,8 @@ import fisica.*;
 //trackeo de manos
 //arreglar rotacion en ejeX
 //arreglar tamaño caja de colisiones
-//hacer un impulso para alejar del enemigo u obstaculo
-//hacer aparecer items de tiempo cada tanto o en diferentes lugares
-//implementar escenario y hacer una hitbox con poligonos?
+//hacer un impulso para alejar del enemigo u obstaculo?
+//arreglar hacer aparecer items de tiempo cada tanto o en diferentes lugares, capaz es mejor un array con un for para que cada uno tenga un nombre
 //hacer circulo de interfaz ?
 //dar feedback en las colisiones
 //diagrama de estados
@@ -14,6 +13,17 @@ import fisica.*;
 //crear imagenes
 PImage conejo_motosierra;
 PImage nave_s_fuego;
+//poligonos
+PImage poly1;
+PImage poly2;
+PImage poly3;
+//mapa colisiones
+PImage mascara; //imagen mascara
+//tiempo
+float tiempoActual;
+float tiempoUltimaGeneracion;
+float tiempoEntreGeneraciones = 05.0; // Tiempo en segundos entre generaciones
+
 //crear mundo
 FWorld mundo;
 //crear nave
@@ -27,7 +37,7 @@ Enemigo enemigo;
 //crear interfaz
 Interfaz interfaz;
 //crear caminos
-Camino camino1,camino2,camino3;
+Camino camino1, camino2, camino3;
 
 
 void setup() {
@@ -45,35 +55,47 @@ void setup() {
   //cargar imagenes
   conejo_motosierra = loadImage("images/enemigo_motosierra.png");
   nave_s_fuego = loadImage("images/conejo_nave_s_fuego.png");
+  //poligonos
+  poly1 = loadImage("images/poly1.png");
+  poly2 = loadImage("images/poly2.png");
+  poly3 = loadImage("images/poly3.png");
+  //imagen mapa colision
+  mascara = loadImage("images/mapa_colision.jpg");
+  mascara.loadPixels();
 
   //objetos
   nave = new Nave();
-  //constructor:posX,posY,tamX,tamY,nombre
-  obstaculo = new Obstaculo(random(200, width-200), random(100, height-100), 200, 100, "obstaculo1");
-  //item
-  item = new Item (random(50, width-50), random(50, height-50), 50, 50, "Item");
-  //revisar el tamaño de la caja de colisiones
-  enemigo = new Enemigo(random(50, width-50), random(50, height-50), 100, 100, "Enemigo");
   interfaz =new Interfaz();
+  interfaz.dibujar_obstaculos();
   //caminos
   camino1=new Camino(1);
   camino2=new Camino(2);
   camino3=new Camino(3);
+  //mapa de colisiones
+  interfaz.crearMapaDeColisiones();
 }
-//impulso nave
+
 
 
 void draw() {
   background(0);
-
-
   //mundo
   mundo.step();
   mundo.draw();
   //nave
   nave.moverNave();
-  enemigo.mover();
+  if (interfaz.cant_enem<1) {
+    interfaz.generarEnem();
+  }
+
   push();
+  tiempoActual = millis() / 1000.0; // Tiempo actual en segundos
+  // Comprueba si ha pasado suficiente tiempo desde la última generación
+  boolean  pasotiempo_generacion=tiempoActual - tiempoUltimaGeneracion >= tiempoEntreGeneraciones ;
+  if (pasotiempo_generacion && interfaz.cant_items <1) {
+    interfaz.generarItem();
+    tiempoUltimaGeneracion = tiempoActual; // Actualiza el tiempo de la última generación
+  }
   interfaz.dibujar_Barra_T();
   interfaz.dibujar_vidas();
   pop();
@@ -123,8 +145,7 @@ void contactStarted(FContact contacto) {
       if (interfaz.num_vidas>0 && interfaz.tiempoRestante>0) {
         //agarraste un item
         println("agarraste un item");
-        //borrar el item
-        mundo.remove(item.Item);
+        interfaz.borrarItem();
         //dar tiempo
         interfaz.tiempoRestante+=1;
       }

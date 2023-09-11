@@ -86,7 +86,7 @@ class Camino {
       myPoly1.vertex(-540.0, 331.0);
       pop();
       //attach image para ponerle la imagen
-      //myPoly1.attachImage(nombre_del_pimage);
+      myPoly1.attachImage(poly1);
       myPoly1.setStatic(true);
       myPoly1.setPosition(540, 350);
       myPoly1.setGrabbable(false);
@@ -129,9 +129,9 @@ class Camino {
       myPoly2.vertex(537.0, -359.0);
       pop();
       //attach image para ponerle la imagen
-      //myPoly2.attachImage(nombre_del_pimage);
+      myPoly2.attachImage(poly2);
       myPoly2.setStatic(true);
-      myPoly2.setPosition(540, 350);
+      myPoly2.setPosition(545, 350);
       myPoly2.setGrabbable(false);
       mundo.add(myPoly2);
     }
@@ -171,13 +171,11 @@ class Camino {
       myPoly.vertex(539.0, -217.0);
       myPoly.vertex(537.0, 332.0);
       //attach image para ponerle la imagen
-      //myPoly.attachImage(nombre_del_pimage);
+      myPoly.attachImage(poly3);
       myPoly.setStatic(true);
-      myPoly.setPosition(550, 365);
+      myPoly.setPosition(550, 390);
       myPoly.setGrabbable(false);
       mundo.add(myPoly);
     }
   }
-  //dibujar el segundo
-  //dibujar el tercero
 }
