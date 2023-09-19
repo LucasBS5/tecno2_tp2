@@ -1,19 +1,15 @@
-//mirar video de coordenadas polares para arreglar el movimiento en x
-/*quiero que el angulo determine la direccion de antemano no que incremente o decremente
- dependiendo para donde arrastro el mouse*/
+
 class Nave {
   FBox nave;
   //vars movimiento
-  float impY;
-  float impX;
-  float naveX;
-  float naveY;
-  float posX;
-  float posY;
-  boolean mouseArrastrado;
+  float x;
+  float y;
   //vars angulo
   float angulo;
-  float rotinicial;
+  float velocidad;
+  float dx;
+  float dy;
+  //float rotinicial;
   //vars visuales
   int alto;
   int ancho;
@@ -30,16 +26,11 @@ class Nave {
   Nave() {
     nave = new FBox(25, 50);
     //vars movimiento
-    impY = 0;
-    impX=0;
-    rotinicial=0;
-    mouseArrastrado = false;
+    float angulo;
     //vars visuales
     ancho = 25;
     alto = 50;
-    naveX = 0+100;
-    naveY = height - 50;
-    nave.setPosition(naveX, naveY);
+    nave.setPosition(100, height-100);
     nave.setGrabbable(false);
     nave.setName("Nave");
     vidas=5;
@@ -56,29 +47,27 @@ class Nave {
     mundo.add(nave);
   }
 
-  // Función para mover la nave
+
   void moverNave() {
-    if (mouseArrastrado && pmouseY > mouseY) {
-      impY-=1;
-    } else if (!mouseArrastrado) {
-      //impY=0;
-      //descomentar esto si vamos a usar gravedad 0
-      impY =5;
+    if (estado=="jugando") {
+      push();
+      angulo = radians(map(mouseX, 0, width, -90, 90));
+
+      // Calcula la velocidad en el eje X basada en el ángulo
+      float  velocidadX = map(mouseX, width/2, width, -50, 50); // Utiliza cos(angulo) para determinar la velocidad en X
+
+      // Calcula la velocidad en el eje Y basada en el movimiento vertical del mouse
+      float velocidadY = map(mouseY, height / 2, height, -50, 50); // Limita el movimiento vertical al cuarto inferior
+      nave.setRotation(angulo);
+      // Aplica el impulso en X y Y utilizando addImpulse
+      nave.setVelocity(velocidadX, velocidadY);
+      pop();
+    } else
+    {
+      nave.setVelocity(0, 0);
     }
-    if (mouseArrastrado && pmouseX < mouseX) {
-      rotinicial +=1; // Ajusta la sensibilidad de la rotacion
-      impX+=0.1;
-    } else if (mouseArrastrado && pmouseX > mouseX) {
-      rotinicial -=1; // Ajusta la sensibilidad de la rotacion
-      impX-=0.1;
-    } else if (!mouseArrastrado) {
-      impX=0;
-    }
-    //constrain para limitar los angulos de rotracion a 80 grados
-    nave.setRotation(radians(constrain(rotinicial, -90, 90)));
-    //aca habria que hacer un calculo para que el angulo determine la direccion
-    nave.addImpulse(impX, impY);
   }
+
 
 
   //hacer invulnerable
@@ -93,14 +82,5 @@ class Nave {
       invulnerable = false;
     }
     return invulnerable;
-  }
-
-  // Métodos para saber si se arrastro o no el mouse
-  void mousePressed() {
-    mouseArrastrado = true;
-  }
-
-  void mouseReleased() {
-    mouseArrastrado = false;
   }
 }

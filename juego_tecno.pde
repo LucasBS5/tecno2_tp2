@@ -1,13 +1,12 @@
 import fisica.*;
 //to do list
 //trackeo de manos
-//arreglar rotacion en ejeX
 //arreglar tamaño caja de colisiones
 //hacer un impulso para alejar del enemigo u obstaculo?
-//arreglar hacer aparecer items de tiempo cada tanto o en diferentes lugares, capaz es mejor un array con un for para que cada uno tenga un nombre
+//arreglar la forma en la que se generan los items que cada uno tenga un nombre
 //hacer circulo de interfaz ?
 //dar feedback en las colisiones
-//agregar fuego a la nave 
+//agregar fuego a la nave
 
 //crear imagenes
 PImage conejo_motosierra;
@@ -160,13 +159,9 @@ void draw() {
     interfaz.text_vidas ="Vidas: ";
 
     //nave
-    nave.impY = 0;
-    nave.impX=0;
-    nave.rotinicial=0;
-    nave.mouseArrastrado = false;
-    nave.naveX = 0+100;
-    nave.naveY = height - 50;
-    nave.nave.setPosition(nave.naveX, nave.naveY);
+    //quizas resetear el angulo?
+    nave.nave.setVelocity(0,0);
+    nave.nave.setPosition(100, height-100);
 
 
     //restear items y enemigos
@@ -181,14 +176,14 @@ void draw() {
 
 //metodos para saber si se arrastró o no el mouse
 void mousePressed() {
-  nave.mousePressed(); // Llamar al método para manejar el mouse cuando se presiona
+  // nave.mousePressed(); // Llamar al método para manejar el mouse cuando se presiona
   if (estado=="inicio") {
     estado = "jugando";
   }
 }
 
 void mouseReleased() {
-  nave.mouseReleased(); // Llamar al método para manejar el mouse cuando se suelta
+  // nave.mouseReleased(); // Llamar al método para manejar el mouse cuando se suelta
 }
 
 //colisones

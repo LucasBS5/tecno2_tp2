@@ -71,7 +71,7 @@ class Interfaz {
       boolean estaCercaDelBorde = coordenada.x <= offset || coordenada.x >= width - offset ||
         coordenada.y <= offset || coordenada.y >= height - offset;
       // Verifica si la distancia entre la nave y el item es positiva para no dibujarse detras de la nave
-      if (!estaCercaDelBorde && dist(nave.naveX, nave.naveY, coordenada.x, coordenada.y) >= 10) {
+      if (!estaCercaDelBorde && dist(nave.x, nave.y, coordenada.x, coordenada.y) >= 10) {
         // Crea un objeto en la coordenada seleccionada
         item = new Item(coordenada.x, coordenada.y, tam, tam, "Item");
         //sumar uno a la cantidad actual de items
@@ -105,7 +105,7 @@ class Interfaz {
       boolean estaCercaDelBorde = coordenada.x <= offset || coordenada.x >= width - offset ||
         coordenada.y <= offset || coordenada.y >= height - offset;
       // Verifica si la distancia entre la nave y el item es positiva para no dibujarse detras de la nave
-      if (!estaCercaDelBorde && dist(nave.naveX, nave.naveY, coordenada.x, coordenada.y) >= 50) {
+      if (!estaCercaDelBorde && dist(nave.x, nave.y, coordenada.x, coordenada.y) >= 50) {
         // Crea un enemigo
         enemigo = new Enemigo(coordenada.x, coordenada.y, tam, tam, "Enemigo");
         cant_enem+=1;
