@@ -88,12 +88,14 @@ class Interfaz {
     //restar uno a la cantidad actual de items en pantalla
     cant_items-=1;
   }
+  
+ 
 
 
   //generar enemigo
   void generarEnem() {
     int tam=100;
-    int offset =tam; // Ajusta el offset para evitar que los enemigos se generen en los bordes
+    int offset =tam; // Ajustar el offset para evitar que los enemigos se generen en los bordes
     if (coordenadasValidas.size() > 0) {
       // Elige una coordenada aleatoria de las coordenadas válidas
       int indiceAleatorio = int(random(coordenadasValidas.size()));
@@ -109,6 +111,13 @@ class Interfaz {
         cant_enem+=1;
       }
     }
+  }
+  
+   void borrarEnem() {
+    //borrar el item
+    mundo.remove(enemigo.enemigo);
+    //restar uno a la cantidad actual de items en pantalla
+    cant_enem-=1;
   }
   
   //dibujar obstaculos

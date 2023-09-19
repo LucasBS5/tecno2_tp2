@@ -32,8 +32,6 @@ class Nave {
     //vars movimiento
     impY = 0;
     impX=0;
-    posY = height/2; // Inicializar la posición vertical al centro de la pantalla
-    posX = width/2;
     rotinicial=0;
     mouseArrastrado = false;
     //vars visuales
@@ -81,6 +79,7 @@ class Nave {
     //aca habria que hacer un calculo para que el angulo determine la direccion
     nave.addImpulse(impX, impY);
   }
+
 
   //hacer invulnerable
   void hacerInvulnerable() {

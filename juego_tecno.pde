@@ -7,8 +7,7 @@ import fisica.*;
 //arreglar hacer aparecer items de tiempo cada tanto o en diferentes lugares, capaz es mejor un array con un for para que cada uno tenga un nombre
 //hacer circulo de interfaz ?
 //dar feedback en las colisiones
-//diagrama de estados
-//pantallas de incio,ganaste,perdiste?
+//agregar fuego a la nave 
 
 //crear imagenes
 PImage conejo_motosierra;
@@ -41,6 +40,11 @@ Interfaz interfaz;
 //crear caminos
 Camino camino1, camino2, camino3;
 
+//crear meta
+FBox meta;
+
+//estado
+String estado;
 
 void setup() {
   //inicializar libreria fisica
@@ -80,38 +84,107 @@ void setup() {
   camino3=new Camino(3);
   //mapa de colisiones
   interfaz.crearMapaDeColisiones();
+  //estados empieza en inicio
+  estado="inicio";
+  //meta
+  meta = new FBox(150, 150);
+  meta.setStatic(true);
+  meta.setSensor(true);
+  meta.setPosition(135, 0);
+  meta.setDrawable(false);
+  meta.setGrabbable(false);
+  meta.setName("meta");
+  mundo.add(meta);
 }
 
 void draw() {
-  background(0);
-  image(fondo1, 0, 0);
-
-  //mundo
-  mundo.step();
-  mundo.draw();
-
-  //nave
-  nave.moverNave();
-  if (interfaz.cant_enem<3) {
-    interfaz.generarEnem();
+  //estado incio
+  if (estado=="inicio") {
+    //cuando se detecta una mano de este estado pasa a jugando
+    /*if(){
+     estado="jugando";
+     }*/
   }
 
-  push();
-  tiempoActual = millis() / 1000.0; // Tiempo actual en segundos
-  // Comprueba si ha pasado suficiente tiempo desde la última generación
-  boolean  pasotiempo_generacion=tiempoActual - tiempoUltimaGeneracion >= tiempoEntreGeneraciones ;
-  if (pasotiempo_generacion && interfaz.cant_items <1) {
-    interfaz.generarItem();
-    tiempoUltimaGeneracion = tiempoActual; // Actualiza el tiempo de la última generación
+  //estado jugando
+  if (estado=="jugando") {
+    image(fondo1, 0, 0);
+    //mundo
+    mundo.step();
+    mundo.draw();
+    //nave
+    nave.moverNave();
+    //generar enemigos
+    //aca se modifica la cantidad de enemigos que se genera
+    if (interfaz.cant_enem<=0) {
+      interfaz.generarEnem();
+    }
+
+    push();
+    tiempoActual = millis() / 1000.0; // Tiempo actual en segundos
+    // Comprueba si ha pasado suficiente tiempo desde la última generación
+    boolean  pasotiempo_generacion=tiempoActual - tiempoUltimaGeneracion >= tiempoEntreGeneraciones ;
+    if (pasotiempo_generacion && interfaz.cant_items <1) {
+      interfaz.generarItem();
+      tiempoUltimaGeneracion = tiempoActual; // Actualiza el tiempo de la última generación
+    }
+    interfaz.dibujar_Barra_T();
+    interfaz.dibujar_vidas();
+    pop();
+
+    //si se acaban las vidas o el tiempo pasa al estado perdiste
+    if (interfaz.num_vidas<=0 || interfaz.tiempoRestante<0) {
+      estado="perdiste";
+    }
+
+    // fin del codigo del estado jugando
   }
-  interfaz.dibujar_Barra_T();
-  interfaz.dibujar_vidas();
-  pop();
+
+  //estado ganaste
+  if (estado=="ganaste") {
+    // cuando pasa x cantidad de tiempo de este estado pasa a inicio
+    background(0, 250, 0);
+    estado="reinicio";
+  }
+  if (estado=="perdiste") {
+    background(250, 0, 0);
+    estado="reinicio";
+  }
+  // cuando pasa x cantidad de tiempo de este estado pasa a inicio
+  if (estado=="reinicio") {
+    //interfaz
+    interfaz.tiempoInicial=50;
+    interfaz.tiempoRestante = interfaz.tiempoInicial; // Tiempo restante en segundos
+    interfaz.barraAnchoInicial = 400;
+    interfaz.num_vidas=5;
+    interfaz.text_vidas ="Vidas: ";
+
+    //nave
+    nave.impY = 0;
+    nave.impX=0;
+    nave.rotinicial=0;
+    nave.mouseArrastrado = false;
+    nave.naveX = 0+100;
+    nave.naveY = height - 50;
+    nave.nave.setPosition(nave.naveX, nave.naveY);
+
+
+    //restear items y enemigos
+    interfaz.borrarItem();
+    interfaz.borrarEnem();
+
+    //volver a la pantalla de inicio
+    background(250);
+    estado="inicio";
+  }
 }
 
 //metodos para saber si se arrastró o no el mouse
 void mousePressed() {
   nave.mousePressed(); // Llamar al método para manejar el mouse cuando se presiona
+  if (estado=="inicio") {
+    estado = "jugando";
+  }
 }
 
 void mouseReleased() {
@@ -142,6 +215,12 @@ void contactStarted(FContact contacto) {
       //cambia el color de nave
       body1.setImageAlpha(90);
     }
+
+    //cuando colisionas con la meta  y no se termino el tiempo o las vidas pasa a ganaste
+    if (body1.getName() == "Nave" && body2.getName() == "meta" && interfaz.num_vidas>0 && interfaz.tiempoRestante>0 ) {
+      estado="ganaste";
+    }
+
 
     //cuando la nave choca contra un item
     if (body1.getName() == "Nave" && body2.getName() == "Item")
