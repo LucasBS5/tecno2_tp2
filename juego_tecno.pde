@@ -23,6 +23,14 @@ float tiempoActual;
 float tiempoUltimaGeneracion;
 float tiempoEntreGeneraciones = 05.0; // Tiempo en segundos entre generaciones
 
+//sonidos
+SoundFile musicaFondo;
+SoundFile winlose;
+SoundFile choqueNave;
+SoundFile bebida;
+SoundFile zombies;
+SoundFile aplausos;
+
 //crear mundo
 FWorld mundo;
 //crear nave
@@ -73,6 +81,14 @@ void setup() {
   mascara = loadImage("images/mapa_colision.jpg");
   mascara.loadPixels();
 
+  //Sonidos
+  musicaFondo = new SoundFile(this, "sonido/musica fondo1.wav");
+  choqueNave = new SoundFile(this, "sonido/choque2.wav");
+  zombies = new SoundFile(this, "sonido/zombie1.wav");
+  bebida = new SoundFile(this, "sonido/bebida-combustible2.wav");
+  winlose = new SoundFile(this, "sonido/musicawl.wav");
+  aplausos = new SoundFile(this, "sonido/aplausos.wav");
+
   //objetos
   nave = new Nave();
   interfaz =new Interfaz();
@@ -108,11 +124,13 @@ void draw() {
   //estado jugando
   if (estado=="jugando") {
     image(fondo1, 0, 0);
+    interfaz.dibuja_meteoritos();
     //mundo
     mundo.step();
     mundo.draw();
     //nave
     nave.moverNave();
+
     //generar enemigos
     //aca se modifica la cantidad de enemigos que se genera
     if (interfaz.cant_enem<=0) {
@@ -134,6 +152,8 @@ void draw() {
     //si se acaban las vidas o el tiempo pasa al estado perdiste
     if (interfaz.num_vidas<=0 || interfaz.tiempoRestante<0) {
       estado="perdiste";
+      winlose.amp(0.5);
+      winlose.loop();
     }
 
     // fin del codigo del estado jugando
@@ -160,7 +180,7 @@ void draw() {
 
     //nave
     //quizas resetear el angulo?
-    nave.nave.setVelocity(0,0);
+    nave.nave.setVelocity(0, 0);
     nave.nave.setPosition(100, height-100);
 
 

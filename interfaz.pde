@@ -7,15 +7,27 @@ class Interfaz {
   int num_vidas;
   int cant_items;
   int cant_enem;
+
   //vector posiciones validas para generar
   ArrayList<PVector> coordenadasValidas = new ArrayList<PVector>();
+  //meteoritos
+  ArrayList<Meteorito> meteoritos = new ArrayList<Meteorito>();
+  int numMeteoritos;
+
   Interfaz() {
     tiempoInicial = 50; // Tiempo inicial en segundos
     tiempoRestante = tiempoInicial; // Tiempo restante en segundos
     barraAnchoInicial = 400; // Ancho inicial de la barra
     text_vidas ="Vidas: ";
     num_vidas=5;
+
+    //meteoritos
+    numMeteoritos = 5;
+    for (int i = 0; i < numMeteoritos; i++) {
+      meteoritos.add(new Meteorito());
+    }
   }
+
   void dibujar_Barra_T() {
     barraAncho = barraAnchoInicial; // Ancho actual de la barra
     push();
@@ -88,8 +100,8 @@ class Interfaz {
     //restar uno a la cantidad actual de items en pantalla
     cant_items-=1;
   }
-  
- 
+
+
 
 
   //generar enemigo
@@ -112,21 +124,28 @@ class Interfaz {
       }
     }
   }
-  
-   void borrarEnem() {
+
+  void borrarEnem() {
     //borrar el item
     mundo.remove(enemigo.enemigo);
     //restar uno a la cantidad actual de items en pantalla
     cant_enem-=1;
   }
-  
+
   //dibujar obstaculos
   void dibujar_obstaculos() {
     //obstaculo1
-     //constructor:posX,posY,tamX,tamY,nombre
-  obstaculo = new Obstaculo(140, 250, 75, 75, "obstaculo1");
-    //obstaculo2 
+    //constructor:posX,posY,tamX,tamY,nombre
+    obstaculo = new Obstaculo(140, 250, 75, 75, "obstaculo1");
+    //obstaculo2
+    obstaculo = new Obstaculo(300, 250, 75, 75, "obstaculo1");
     //etc..
-    
+  }
+
+  void dibuja_meteoritos() {
+    for (Meteorito meteorito : meteoritos) {
+      meteorito.mover();
+      meteorito.mostrar();
+    }
   }
 }

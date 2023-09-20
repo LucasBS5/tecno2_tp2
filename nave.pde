@@ -51,13 +51,14 @@ class Nave {
   void moverNave() {
     if (estado=="jugando") {
       push();
-      angulo = radians(map(mouseX, 0, width, -90, 90));
+      //revisar angulo para que coincida
+      angulo = radians(map(mouseX, 0, width, -130, 130));
 
       // Calcula la velocidad en el eje X basada en el ángulo
-      float  velocidadX = map(mouseX, width/2, width, -50, 50); // Utiliza cos(angulo) para determinar la velocidad en X
+      float  velocidadX = map(mouseX, width/2, width, -60, 60); // Utiliza cos(angulo) para determinar la velocidad en X
 
       // Calcula la velocidad en el eje Y basada en el movimiento vertical del mouse
-      float velocidadY = map(mouseY, height / 2, height, -50, 50); // Limita el movimiento vertical al cuarto inferior
+      float velocidadY = map(mouseY, height / 2, height, -60, 60); // Limita el movimiento vertical al cuarto inferior
       nave.setRotation(angulo);
       // Aplica el impulso en X y Y utilizando addImpulse
       nave.setVelocity(velocidadX, velocidadY);
