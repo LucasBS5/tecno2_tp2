@@ -36,9 +36,21 @@ class Interfaz {
     // Actualizar el ancho de la barra
     barraAncho = map(tiempoRestante, 0, tiempoInicial, 0, barraAnchoInicial);
     // Dibujar la barra
+    noStroke();
     fill(255, 0, 200);
-    rect(width/3, height/22, barraAncho, 20);
+    rect(width/3, height/22, barraAncho, 22, 20);
     pop();
+    
+    //imagen marco
+    marco_barra_t.resize(700, 110);
+    push();
+    imageMode(CENTER);
+    image(marco_barra_t, width/2-50, height/17.8);
+    pop();
+    
+    //imagen soda de la barra
+    soda_barra_t.resize(70,70);
+    image(soda_barra_t,barraAncho+310,0);
     // Actualizar el tiempo restante
     if (tiempoRestante >0) {
       tiempoRestante -= 1 / frameRate;

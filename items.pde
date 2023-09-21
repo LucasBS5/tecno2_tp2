@@ -7,7 +7,9 @@ class Item {
     Item = new FBox(tamX, tamY);
     Item.setPosition(posX, posY);
     Item.setName(nombre);
-    Item.setFill(0, 255, 0);
+    //aca se cambia el tamaño de la imagen de la soda
+    soda.resize(50,50);
+    Item.attachImage(soda);
     Item.setRestitution(0);
     Item.setSensor(true);
     Item.setStatic(true);

@@ -1,5 +1,7 @@
 
 class Nave {
+
+
   FBox nave;
   //vars movimiento
   float x;
@@ -52,16 +54,16 @@ class Nave {
     if (estado=="jugando") {
       push();
       //revisar angulo para que coincida
-      angulo = radians(map(mouseX, 0, width, -130, 130));
+      angulo = radians(map(zl.mov_x*100, 0, width, -130, 130));
 
       // Calcula la velocidad en el eje X basada en el ángulo
-      float  velocidadX = map(mouseX, width/2, width, -60, 60); // Utiliza cos(angulo) para determinar la velocidad en X
+      float  velocidadX = map(zl.mov_x*100, width/2, width, -60, 60); // Utiliza cos(angulo) para determinar la velocidad en X
 
       // Calcula la velocidad en el eje Y basada en el movimiento vertical del mouse
-      float velocidadY = map(mouseY, height / 2, height, -60, 60); // Limita el movimiento vertical al cuarto inferior
+      float velocidadY = map(zl.mov_y*100, height / 2, height, -60, 60); // Limita el movimiento vertical al cuarto inferior
       nave.setRotation(angulo);
       // Aplica el impulso en X y Y utilizando addImpulse
-      nave.setVelocity(velocidadX, velocidadY);
+      nave.setVelocity(velocidadX,velocidadY);
       pop();
     } else
     {

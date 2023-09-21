@@ -1,4 +1,5 @@
 import fisica.*;
+import processing.sound.*;
 //to do list
 //trackeo de manos
 //arreglar tamaño caja de colisiones
@@ -8,9 +9,36 @@ import fisica.*;
 //dar feedback en las colisiones
 //agregar fuego a la nave
 
+
+//bflow
+
+int PUERTO_IN_OSC = 12345; // puerto de entrada
+int PUERTO_OUT_OSC = 12346; // puerto de salida
+String IP = "127.0.0.1"; // ip del BFlow
+
+
+Receptor receptor;
+
+Emisor emisor;
+
+float averageFlow_x;
+float averageFlow_y;
+
+float totalFlow_x;
+float totalFlow_y;
+
+PuntoLocal pl;
+
+ZonaLocal zl;
+
+
 //crear imagenes
 PImage conejo_motosierra;
 PImage nave_s_fuego;
+//fuego nave
+//soda
+PImage soda;
+//plus
 PImage fondo1;
 //poligonos
 PImage poly1;
@@ -18,12 +46,22 @@ PImage poly2;
 PImage poly3;
 //mapa colisiones
 PImage mascara; //imagen mascara
+//imagenes interfaz
+PImage marco_barra_t;
+PImage soda_barra_t;
+
+//imagenes estados
+//imagen inicio????
+//imagen ganaste
+PImage ganaste;
+//imagen perdiste
+PImage perdiste;
 //tiempo
 float tiempoActual;
 float tiempoUltimaGeneracion;
 float tiempoEntreGeneraciones = 05.0; // Tiempo en segundos entre generaciones
 
-//sonidos
+//Variable de sonido
 SoundFile musicaFondo;
 SoundFile winlose;
 SoundFile choqueNave;
@@ -54,6 +92,19 @@ FBox meta;
 String estado;
 
 void setup() {
+  //bflow
+  setupOSC(PUERTO_IN_OSC, PUERTO_OUT_OSC, IP);
+
+  receptor = new Receptor();
+
+  emisor = new Emisor();
+
+
+  zl = new ZonaLocal(2001, width/2+100, height/2+100, 400, 300);
+  emisor.addZona(zl);
+
+  receptor.setZonasLocales(emisor.zonasLocales);
+
   //inicializar libreria fisica
   Fisica.init(this);
   //inicializar mundo
@@ -73,21 +124,33 @@ void setup() {
   fondo1 = loadImage("images/fondo1.png");
   conejo_motosierra = loadImage("images/enemigo_motosierra.png");
   nave_s_fuego = loadImage("images/conejo_nave_s_fuego.png");
+  //fuego
+  //soda
+  soda = loadImage("images/soda.png");
+  //plus
+  //marco barra tiempo
+  marco_barra_t =loadImage("images/barra.png");
+  //soda barra tiempo
+  soda_barra_t = loadImage("images/soda.png");
+
   //poligonos
   poly1 = loadImage("images/poly1.png");
   poly2 = loadImage("images/poly2.png");
   poly3 = loadImage("images/poly3.png");
+
+  //imagenes estados
+  //imagen inicio????
+  //imagen ganaste
+  ganaste = loadImage("images/ganar.png");
+  ganaste.resize(1080, 720);
+  //imagen perdiste
+  perdiste = loadImage("images/perder.png");
+  perdiste.resize(1080, 720);
+
   //imagen mapa colision
   mascara = loadImage("images/mapa_colision.jpg");
   mascara.loadPixels();
 
-  //Sonidos
-  musicaFondo = new SoundFile(this, "sonido/musica fondo1.wav");
-  choqueNave = new SoundFile(this, "sonido/choque2.wav");
-  zombies = new SoundFile(this, "sonido/zombie1.wav");
-  bebida = new SoundFile(this, "sonido/bebida-combustible2.wav");
-  winlose = new SoundFile(this, "sonido/musicawl.wav");
-  aplausos = new SoundFile(this, "sonido/aplausos.wav");
 
   //objetos
   nave = new Nave();
@@ -97,6 +160,15 @@ void setup() {
   camino1=new Camino(1);
   camino2=new Camino(2);
   camino3=new Camino(3);
+
+  //Sonidos
+  musicaFondo = new SoundFile(this, "sonido/musica fondo1.wav");
+  choqueNave = new SoundFile(this, "sonido/choque2.wav");
+  zombies = new SoundFile(this, "sonido/zombie1.wav");
+  bebida = new SoundFile(this, "sonido/bebida-combustible2.wav");
+  winlose = new SoundFile(this, "sonido/musicawl.wav");
+  aplausos = new SoundFile(this, "sonido/aplausos.wav");
+
   //mapa de colisiones
   interfaz.crearMapaDeColisiones();
   //estados empieza en inicio
@@ -113,6 +185,11 @@ void setup() {
 }
 
 void draw() {
+  //bflow
+
+  receptor.actualizar(mensajes);
+
+  emisor.actualizar();
   //estado incio
   if (estado=="inicio") {
     //cuando se detecta una mano de este estado pasa a jugando
@@ -124,7 +201,21 @@ void draw() {
   //estado jugando
   if (estado=="jugando") {
     image(fondo1, 0, 0);
+    emisor.dibujar();
+    float cx = width / 2;
+    float cy = height / 2;
+    stroke(0, 255, 0);
+    strokeWeight(2);
+    line(cx, cy, cx + averageFlow_x * 10, cy + averageFlow_y * 10);
+
     interfaz.dibuja_meteoritos();
+    //Musica de fondo en loop
+    winlose.stop();
+    // Iniciar la música de fondo si no se está reproduciendo
+    if (!musicaFondo.isPlaying()) {
+      musicaFondo.amp(0.5);
+      musicaFondo.loop();
+    }
     //mundo
     mundo.step();
     mundo.draw();
@@ -152,21 +243,26 @@ void draw() {
     //si se acaban las vidas o el tiempo pasa al estado perdiste
     if (interfaz.num_vidas<=0 || interfaz.tiempoRestante<0) {
       estado="perdiste";
+      musicaFondo.stop();
       winlose.amp(0.5);
       winlose.loop();
     }
-
-    // fin del codigo del estado jugando
   }
 
   //estado ganaste
   if (estado=="ganaste") {
     // cuando pasa x cantidad de tiempo de este estado pasa a inicio
-    background(0, 250, 0);
+    //la imagen de ganaste
+    image(ganaste, 0, 0);
+    //cuando se detecta una mano de este estado pasa a jugando
+    /*if(){}*/
     estado="reinicio";
   }
   if (estado=="perdiste") {
-    background(250, 0, 0);
+    //la imagen de perdiste
+    image(perdiste, 0, 0);
+    //cuando se detecta una mano de este estado pasa a jugando
+    /*if(){}*/
     estado="reinicio";
   }
   // cuando pasa x cantidad de tiempo de este estado pasa a inicio
@@ -187,9 +283,6 @@ void draw() {
     //restear items y enemigos
     interfaz.borrarItem();
     interfaz.borrarEnem();
-
-    //volver a la pantalla de inicio
-    background(250);
     estado="inicio";
   }
 }
@@ -218,6 +311,8 @@ void contactStarted(FContact contacto) {
     if (body1.getName() == "Nave" && body2.getName() == "obstaculo1"
       &&!nave.estaInvulnerable() && interfaz.num_vidas>0)
     {
+      choqueNave.amp(0.3);
+      choqueNave.play();
       println("body1: " + body1.getName());
       println("body2: " + body2.getName());
       //si las vidas son mayores a 0 y la nave no esta invulnerable
@@ -234,12 +329,21 @@ void contactStarted(FContact contacto) {
     //cuando colisionas con la meta  y no se termino el tiempo o las vidas pasa a ganaste
     if (body1.getName() == "Nave" && body2.getName() == "meta" && interfaz.num_vidas>0 && interfaz.tiempoRestante>0 ) {
       estado="ganaste";
+      musicaFondo.stop();
+      winlose.amp(0.5);
+      winlose.loop();
+      aplausos.amp(0.3);
+      aplausos.play();
     }
 
 
     //cuando la nave choca contra un item
     if (body1.getName() == "Nave" && body2.getName() == "Item")
     {
+      bebida.amp(0.3);
+      bebida.play();
+      println("body1: " + body1.getName());
+      println("body2: " + body2.getName());
       println("body1: " + body1.getName());
       println("body2: " + body2.getName());
 
@@ -258,6 +362,8 @@ void contactStarted(FContact contacto) {
     if (body1.getName() == "Nave" && body2.getName() == "Enemigo"
       && !nave.estaInvulnerable() && interfaz.num_vidas>0)
     {
+      zombies.amp(0.3);
+      zombies.play();
       println("body1: " + body1.getName());
       println("body2: " + body2.getName());
       interfaz.num_vidas-=1;
@@ -266,18 +372,6 @@ void contactStarted(FContact contacto) {
       nave.tiempoEsperaInvulnerabilidad = millis();
       //cambia el color de nave
       body1.setImageAlpha(90);
-    }
-    if (body2.getName() == "Nave" && body1.getName() == "Enemigo"
-      && !nave.estaInvulnerable() && interfaz.num_vidas>0)
-    {
-      println("body1: " + body1.getName());
-      println("body2: " + body2.getName());
-      interfaz.num_vidas-=1;
-      // Activa la invulnerabilidad,el tiempo de espera entre activaciones es el tiempo que dura la invulnerabilidad (5s)
-      nave.hacerInvulnerable();
-      nave.tiempoEsperaInvulnerabilidad = millis();
-      //cambia el color de nave
-      body2.setImageAlpha(90);
     }
   }
 }
