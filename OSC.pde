@@ -9,9 +9,6 @@ OscProperties propiedadesOSC;
 
 ArrayList <OscMessage> mensajes;
 
-boolean recibirMensaje = false; // vaiable buleana para recibir mensajes nuevos
-
-
 void setupOSC( int puertoIn, int puertoOut, String ip) {
 
   // in
@@ -29,7 +26,5 @@ void setupOSC( int puertoIn, int puertoOut, String ip) {
 
 void oscEvent (OscMessage m) {
 
-  if (recibirMensaje) {
-    mensajes.add(m);
-  }
+  mensajes.add(m);
 }

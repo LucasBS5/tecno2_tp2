@@ -13,8 +13,6 @@ class Receptor { //<>// //<>// //<>//
 
   void actualizar(ArrayList <OscMessage> mensajes) {
 
-    recibirMensaje = false; // deshabilito la recepción una vez que se procesaron todos los que ingresaron en este fotograma
-    
     resetZonasRemotas(); // Si hay blobs, pone la variable "estaActualizado" en false, en todos las zonas
 
     while (mensajes.size() > 0) { // Mientras hay mensajes en el buffer
@@ -98,7 +96,6 @@ class Receptor { //<>// //<>// //<>//
         zonas.remove(k);  // lo borro de la lista
       }
     }
-    recibirMensaje = true; // habilito la recepción una vez que se procesaron todos los que ingresaron en este fotograma
   }
 
   void setPuntosLocales(ArrayList <PuntoLocal> _puntos) {

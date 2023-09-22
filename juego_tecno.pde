@@ -9,17 +9,17 @@ import processing.sound.*;
 //dar feedback en las colisiones
 //agregar fuego a la nave
 
-
+//--------
 //bflow
-
-int PUERTO_IN_OSC = 12345; // puerto de entrada
-int PUERTO_OUT_OSC = 12346; // puerto de salida
-String IP = "127.0.0.1"; // ip del BFlow
-
+int PUERTO_IN_OSC = 12345;
+int PUERTO_OUT_OSC = 12346;
+String IP = "127.0.0.1";
 
 Receptor receptor;
 
 Emisor emisor;
+
+
 
 float averageFlow_x;
 float averageFlow_y;
@@ -27,9 +27,7 @@ float averageFlow_y;
 float totalFlow_x;
 float totalFlow_y;
 
-PuntoLocal pl;
-
-ZonaLocal zl;
+ZonaLocal z;
 
 
 //crear imagenes
@@ -92,18 +90,18 @@ FBox meta;
 String estado;
 
 void setup() {
+
   //bflow
   setupOSC(PUERTO_IN_OSC, PUERTO_OUT_OSC, IP);
 
-  receptor = new Receptor();
-
   emisor = new Emisor();
+  //p = new PuntoLocal(1001, c.getX(), c.getY() );
+  z= new ZonaLocal(2001, width/2, height/2, 300, 300);
+  emisor.addZona(z);
 
-
-  zl = new ZonaLocal(2001, width/2+100, height/2+100, 400, 300);
-  emisor.addZona(zl);
-
+  receptor = new Receptor();
   receptor.setZonasLocales(emisor.zonasLocales);
+
 
   //inicializar libreria fisica
   Fisica.init(this);
@@ -185,11 +183,10 @@ void setup() {
 }
 
 void draw() {
-  //bflow
 
+  //bflow
   receptor.actualizar(mensajes);
 
-  emisor.actualizar();
   //estado incio
   if (estado=="inicio") {
     //cuando se detecta una mano de este estado pasa a jugando
@@ -201,13 +198,6 @@ void draw() {
   //estado jugando
   if (estado=="jugando") {
     image(fondo1, 0, 0);
-    emisor.dibujar();
-    float cx = width / 2;
-    float cy = height / 2;
-    stroke(0, 255, 0);
-    strokeWeight(2);
-    line(cx, cy, cx + averageFlow_x * 10, cy + averageFlow_y * 10);
-
     interfaz.dibuja_meteoritos();
     //Musica de fondo en loop
     winlose.stop();
@@ -220,7 +210,8 @@ void draw() {
     mundo.step();
     mundo.draw();
     //nave
-    nave.moverNave();
+    //pasar vars de movimiento de la zona local a la nave
+    nave.moverNave(z.getMovX()*20, z.getMovY());
 
     //generar enemigos
     //aca se modifica la cantidad de enemigos que se genera
@@ -285,6 +276,10 @@ void draw() {
     interfaz.borrarEnem();
     estado="inicio";
   }
+  //BFLOW
+  emisor.actualizar();
+  //COMENTAR PARA NO DIBUJARLO
+  emisor.dibujar();
 }
 
 //metodos para saber si se arrastró o no el mouse
