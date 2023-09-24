@@ -64,8 +64,7 @@ PImage ganaste;
 PImage perdiste;
 
 //vars items
-//esto tiene que estar en 0 para que se genere uno y despues otro
-float cant_max_items=0;
+float cant_max_items=1;
 //tiempo items
 float tiempoActual;
 float tiempoUltimaGeneracion;
@@ -89,7 +88,7 @@ Obstaculo obstaculo;
 //crear item
 Item item;
 //crear enemigo
-Enemigo enemigo;
+Enemigo enemigo,enemigo1,enemigo2;
 //crear interfaz
 Interfaz interfaz;
 //crear caminos
@@ -117,7 +116,7 @@ void setup() {
 
   emisor = new Emisor();
   //p = new PuntoLocal(1001, c.getX(), c.getY() );
-  z= new ZonaLocal(2001, width/2, height/2, 300, 300);
+  z= new ZonaLocal(2001,778,418, 300, 300);
   emisor.addZona(z);
 
   receptor = new Receptor();
@@ -261,6 +260,8 @@ void draw() {
     }
     if (interfaz.cant_enem>0) {
       enemigo.mover();
+      enemigo1.mover();
+      enemigo2.mover();
     }
 
 
@@ -269,7 +270,7 @@ void draw() {
     tiempoActual = millis() / 1000.0; // Tiempo actual en segundos
     // Comprueba si ha pasado suficiente tiempo desde la última generación
     boolean  pasotiempo_generacion=tiempoActual - tiempoUltimaGeneracion >= tiempoEntreGeneraciones ;
-    if (pasotiempo_generacion && interfaz.cant_items == cant_max_items) {
+    if (pasotiempo_generacion && interfaz.cant_items < cant_max_items) {
       interfaz.generarItem();
       tiempoUltimaGeneracion = tiempoActual; // Actualiza el tiempo de la última generación
     }

@@ -54,7 +54,7 @@ class Nave {
     if (estado=="jugando") {
       push();
       //revisar angulo para que coincida
-      angulo = radians(map(mouseX, width/2, width, -130, 130));
+      angulo = radians(map(mouseX, 0, width, -130, 130));
 
       // Calcula la velocidad en el eje X basada en el ángulo
       float  velocidadX = map(mouseX, width/2, width, -100, 100);

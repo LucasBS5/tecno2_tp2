@@ -38,7 +38,7 @@ class Interfaz {
     // Dibujar la barra
     noStroke();
     fill(255, 0, 200);
-    rect(width/3, height/22, barraAncho, 22, 20);
+    rect(width/3-10, height/22, barraAncho, 22, 20);
     pop();
 
     //imagen marco
@@ -117,47 +117,35 @@ class Interfaz {
     //borrar el item
     mundo.remove(item.Item);
     //restar uno a la cantidad actual de items en pantalla
-    if(cant_items>=0){
-    cant_items-=1;
+    if (cant_items>=0) {
+      cant_items-=1;
     }
   }
 
 
 
 
-  //generar enemigo
   void generarEnem() {
     int tam = 100;
-    int offset = 200; // Ajustar el offset para evitar que los enemigos se generen en los bordes
-    int minY = height / 3 * 2; // El tercio inferior de la pantalla
-    int maxY = height - offset; // Altura máxima
-    if (coordenadasValidas.size() > 0) {
-      // Elige una coordenada aleatoria de las coordenadas válidas en el tercio inferior
-      int indiceAleatorio = int(random(coordenadasValidas.size()));
-      PVector coordenada = coordenadasValidas.get(indiceAleatorio);
-      //evalua si falta algun objeto
-      if (obstaculo != null && obstaculo.obstaculo != null && nave!=null && nave.nave!=null && nave!=null && nave.nave!=null) {
-        // Verifica si está cerca del borde sumando y restando el tamaño del enemigo
-        boolean estaCercaDelBorde = coordenada.x <= offset || coordenada.x >= width - offset ||
-        coordenada.y <= minY || coordenada.y >= maxY;
-        boolean estaCercaNave = dist(nave.x, nave.y, coordenada.x, coordenada.y) <= 30;
-        boolean estaCercaObstaculo = dist(obstaculo.obstaculo.getX(), obstaculo.obstaculo.getY(), coordenada.x, coordenada.y) <= 120;
-        // Verifica si la distancia entre la nave y el enemigo es positiva para no dibujarse detrás de la nave
-        if (!estaCercaDelBorde && !estaCercaNave && !estaCercaObstaculo) {
-          // Crea un enemigo
-          enemigo = new Enemigo(coordenada.x, coordenada.y, tam, tam, "Enemigo");
-          cant_enem += 1;
-        }
-      }
-    }
+    int minX = 200;
+    int maxX = 750;
+    int minY = 550; // El cuarto inferior de la pantalla
+    int maxY = 670; // Altura máxima
+    enemigo= new Enemigo(750, 650, tam, tam, "Enemigo", minY, maxY, -0.03, 0.4);
+    enemigo1= new Enemigo(550, 550, tam, tam, "Enemigo", minY, maxY, 0.03, 0.5);
+    enemigo2= new Enemigo(200, 670, tam, tam, "Enemigo", minY, maxY, 0.04, 0.3);
+    cant_enem += 1;
   }
 
-
   void borrarEnem() {
-    //borrar el item
-    mundo.remove(enemigo.enemigo);
-    //restar uno a la cantidad actual de items en pantalla
-    cant_enem-=1;
+    // Elimina el enemigos del mundo si existe
+    if (enemigo != null && enemigo.enemigo != null) {
+      mundo.remove(enemigo.enemigo);
+      mundo.remove(enemigo1.enemigo);
+      mundo.remove(enemigo2.enemigo);
+    }
+    // Disminuye la cantidad actual de enemigos en pantalla
+    cant_enem -= 1;
   }
 
   //dibujar obstaculos
