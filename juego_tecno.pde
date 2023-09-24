@@ -142,7 +142,7 @@ void setup() {
   nave_s_fuego_golpe = loadImage("images/conejo_nave_s_fuego_golpe.png");
   nave_s_fuego_golpe.resize(90, 90);
   fuego_nave = loadImage("images/nave_c_fuego.png");
-  fuego_nave.resize(185,185);
+  fuego_nave.resize(185, 185);
   //obstaculo img
   obstaculo_img= loadImage("images/img_obstaculo.png");
   //fuego
@@ -335,13 +335,16 @@ void draw() {
     //restear items y enemigos
     interfaz.borrarItem();
     interfaz.borrarEnem();
+    //borra las imagenes
+    // Borra todas las imágenes del ArrayList
+    vidas.clear();
     // Vuelve a agregar la cantidad inicial de imágenes de vida al arreglo
     for (int i = 0; i < 5; i++) {
       vidas.add(vidaImage.copy());
     }
     estado="inicio";
   }
-  
+
   //BFLOW
   emisor.actualizar();
   //COMENTAR PARA NO DIBUJARLO
