@@ -62,10 +62,14 @@ PImage inicio;
 PImage ganaste;
 //imagen perdiste
 PImage perdiste;
-//tiempo
+
+//vars items
+//esto tiene que estar en 0 para que se genere uno y despues otro
+float cant_max_items=0;
+//tiempo items
 float tiempoActual;
 float tiempoUltimaGeneracion;
-float tiempoEntreGeneraciones = 05.0; // Tiempo en segundos entre generaciones
+float tiempoEntreGeneraciones = 03.0; // Tiempo en segundos entre generaciones
 
 //Variable de sonido
 SoundFile musicaFondo;
@@ -265,7 +269,7 @@ void draw() {
     tiempoActual = millis() / 1000.0; // Tiempo actual en segundos
     // Comprueba si ha pasado suficiente tiempo desde la última generación
     boolean  pasotiempo_generacion=tiempoActual - tiempoUltimaGeneracion >= tiempoEntreGeneraciones ;
-    if (pasotiempo_generacion && interfaz.cant_items <1) {
+    if (pasotiempo_generacion && interfaz.cant_items == cant_max_items) {
       interfaz.generarItem();
       tiempoUltimaGeneracion = tiempoActual; // Actualiza el tiempo de la última generación
     }
@@ -322,7 +326,6 @@ void draw() {
     interfaz.tiempoRestante = interfaz.tiempoInicial; // Tiempo restante en segundos
     interfaz.barraAnchoInicial = 400;
     interfaz.num_vidas=5;
-    interfaz.text_vidas ="Vidas: ";
 
     //nave
     //quizas resetear el angulo?
@@ -334,6 +337,9 @@ void draw() {
 
     //restear items y enemigos
     interfaz.borrarItem();
+    interfaz.cant_items=0;
+    // Restablecer tiempo de última generación
+    tiempoUltimaGeneracion = tiempoActual;
     interfaz.borrarEnem();
     //borra las imagenes
     // Borra todas las imágenes del ArrayList

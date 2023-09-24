@@ -54,7 +54,7 @@ class Nave {
     if (estado=="jugando") {
       push();
       //revisar angulo para que coincida
-      angulo = radians(map(mouseX, 0, width, -130, 130));
+      angulo = radians(map(mouseX, width/2, width, -130, 130));
 
       // Calcula la velocidad en el eje X basada en el ángulo
       float  velocidadX = map(mouseX, width/2, width, -100, 100);
@@ -63,9 +63,9 @@ class Nave {
       float velocidadY = map(mouseY, height / 2, height, -60, 60); // Limita el movimiento vertical al cuarto inferior
       nave.setRotation(angulo);
       //descomentar para mover con bmove
-      nave.setVelocity(bx,by);
+      //nave.setVelocity(bx,by);
       //descomentar para mover con mouse
-      //nave.setVelocity(velocidadX, velocidadY);
+      nave.setVelocity(velocidadX, velocidadY);
       pop();
       push();
       // Aplica la saturación al fuego
