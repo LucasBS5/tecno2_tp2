@@ -6,7 +6,6 @@ import processing.sound.*;
 //hacer un impulso para alejar del enemigo u obstaculo?
 //arreglar la forma en la que se generan los items que cada uno tenga un nombre
 //hacer circulo de interfaz ?
-//dar feedback en las colisiones
 //agregar fuego a la nave
 
 //--------
@@ -32,11 +31,19 @@ ZonaLocal z;
 
 //crear imagenes
 PImage conejo_motosierra;
+//obstaculo
+PImage obstaculo_img;
 PImage nave_s_fuego;
+PImage fuego_nave;
+PImage nave_s_fuego_golpe;
 //fuego nave
 //soda
 PImage soda;
 //plus
+PImage vidaImage; // Imagen de una vida
+ArrayList<PImage> vidas = new ArrayList<PImage>(); // ArrayList para las vidas
+
+//fondo
 PImage fondo1;
 //poligonos
 PImage poly1;
@@ -49,7 +56,8 @@ PImage marco_barra_t;
 PImage soda_barra_t;
 
 //imagenes estados
-//imagen inicio????
+//imagen inicio
+PImage inicio;
 //imagen ganaste
 PImage ganaste;
 //imagen perdiste
@@ -88,6 +96,15 @@ FBox meta;
 
 //estado
 String estado;
+//carga para evitar crasheos
+boolean inicioCargado = false;
+float tiempoInicio;
+
+//tiempo espera ganaste o perdiste
+// Definir una variable para llevar el registro del tiempo
+boolean esperaIniciada_gop = false;
+long tiempoEspera_gop=0;
+
 
 void setup() {
 
@@ -122,10 +139,22 @@ void setup() {
   fondo1 = loadImage("images/fondo1.png");
   conejo_motosierra = loadImage("images/enemigo_motosierra.png");
   nave_s_fuego = loadImage("images/conejo_nave_s_fuego.png");
+  nave_s_fuego_golpe = loadImage("images/conejo_nave_s_fuego_golpe.png");
+  nave_s_fuego_golpe.resize(90, 90);
+  fuego_nave = loadImage("images/nave_c_fuego.png");
+  fuego_nave.resize(185,185);
+  //obstaculo img
+  obstaculo_img= loadImage("images/img_obstaculo.png");
   //fuego
   //soda
   soda = loadImage("images/soda.png");
-  //plus
+  //vidas
+  vidaImage =loadImage("images/vidas.png");
+  //tamaño vidas
+  vidaImage.resize(55, 55);
+  for (int i = 0; i < 5; i++) {
+    vidas.add(vidaImage.copy()); // Agrega copias de la imagen al arreglo
+  }
   //marco barra tiempo
   marco_barra_t =loadImage("images/barra.png");
   //soda barra tiempo
@@ -137,7 +166,8 @@ void setup() {
   poly3 = loadImage("images/poly3.png");
 
   //imagenes estados
-  //imagen inicio????
+  //imagen inicio
+  inicio =  loadImage("images/inicio.jpg");
   //imagen ganaste
   ganaste = loadImage("images/ganar.png");
   ganaste.resize(1080, 720);
@@ -180,22 +210,29 @@ void setup() {
   meta.setGrabbable(false);
   meta.setName("meta");
   mundo.add(meta);
+  // Guarda el tiempo actual en milisegundos.
+  tiempoInicio = millis();
 }
 
 void draw() {
-
   //bflow
   receptor.actualizar(mensajes);
 
   //estado incio
   if (estado=="inicio") {
+    image(inicio, 0, 0);
+    push();
+    textSize(30);
+    fill(200);
+    text("Levanta la mano para jugar", 380, 520);
+    pop();
     //cuando se detecta una mano de este estado pasa a jugando
     /*if(){
      estado="jugando";
      }*/
   }
 
-  //estado jugando
+  //estado jugando y pasó el tiempo de carga
   if (estado=="jugando") {
     image(fondo1, 0, 0);
     interfaz.dibuja_meteoritos();
@@ -211,13 +248,18 @@ void draw() {
     mundo.draw();
     //nave
     //pasar vars de movimiento de la zona local a la nave
-    nave.moverNave(z.getMovX()*20, z.getMovY());
+    nave.moverNave(z.getMovX()*20, z.getMovY()*20);
 
     //generar enemigos
     //aca se modifica la cantidad de enemigos que se genera
     if (interfaz.cant_enem<=0) {
       interfaz.generarEnem();
     }
+    if (interfaz.cant_enem>0) {
+      enemigo.mover();
+    }
+
+
 
     push();
     tiempoActual = millis() / 1000.0; // Tiempo actual en segundos
@@ -242,19 +284,36 @@ void draw() {
 
   //estado ganaste
   if (estado=="ganaste") {
-    // cuando pasa x cantidad de tiempo de este estado pasa a inicio
-    //la imagen de ganaste
-    image(ganaste, 0, 0);
-    //cuando se detecta una mano de este estado pasa a jugando
-    /*if(){}*/
-    estado="reinicio";
+    if (!esperaIniciada_gop) {
+      // Si la espera no se ha iniciado, configura el tiempo de espera y marca que se ha iniciado
+      tiempoEspera_gop = millis();
+      esperaIniciada_gop = true;
+      //la imagen de ganaste
+      image(ganaste, 0, 0);
+    }
+
+    // Verifica si ha pasado el tiempo deseado (por ejemplo, 3000 milisegundos, es decir, 3 segundos)
+    if (millis() - tiempoEspera_gop >= 3000) {
+      // Reinicia las variables y cambia al estado "inicio"
+      esperaIniciada_gop = false;
+      estado = "reinicio";
+    }
   }
   if (estado=="perdiste") {
-    //la imagen de perdiste
-    image(perdiste, 0, 0);
-    //cuando se detecta una mano de este estado pasa a jugando
-    /*if(){}*/
-    estado="reinicio";
+    if (!esperaIniciada_gop) {
+      // Si la espera no se ha iniciado, configura el tiempo de espera y marca que se ha iniciado
+      tiempoEspera_gop = millis();
+      esperaIniciada_gop = true;
+      //la imagen de ganaste
+      image(perdiste, 0, 0);
+    }
+
+    // Verifica si ha pasado el tiempo deseado (por ejemplo, 3000 milisegundos, es decir, 3 segundos)
+    if (millis() - tiempoEspera_gop >= 3000) {
+      // Reinicia las variables y cambia al estado "inicio"
+      esperaIniciada_gop = false;
+      estado = "reinicio";
+    }
   }
   // cuando pasa x cantidad de tiempo de este estado pasa a inicio
   if (estado=="reinicio") {
@@ -269,23 +328,28 @@ void draw() {
     //quizas resetear el angulo?
     nave.nave.setVelocity(0, 0);
     nave.nave.setPosition(100, height-100);
-
+    // Reinicia las variables y cambia al estado "inicio"
+    esperaIniciada_gop = false;
+    tiempoEspera_gop=0;
 
     //restear items y enemigos
     interfaz.borrarItem();
     interfaz.borrarEnem();
+    // Vuelve a agregar la cantidad inicial de imágenes de vida al arreglo
+    for (int i = 0; i < 5; i++) {
+      vidas.add(vidaImage.copy());
+    }
     estado="inicio";
   }
+  
   //BFLOW
   emisor.actualizar();
   //COMENTAR PARA NO DIBUJARLO
   emisor.dibujar();
 }
 
-//metodos para saber si se arrastró o no el mouse
 void mousePressed() {
-  // nave.mousePressed(); // Llamar al método para manejar el mouse cuando se presiona
-  if (estado=="inicio") {
+  if (estado == "inicio" && !inicioCargado && millis() - tiempoInicio >= 3000 ) {
     estado = "jugando";
   }
 }
@@ -313,12 +377,14 @@ void contactStarted(FContact contacto) {
       //si las vidas son mayores a 0 y la nave no esta invulnerable
       //perdiste una vida
       interfaz.num_vidas-=1;
+      vidas.remove(vidas.size() - 1); // Elimina la última imagen de vida
 
       // Activa la invulnerabilidad,el tiempo de espera entre activaciones es el tiempo que dura la invulnerabilidad (5s)
       nave.hacerInvulnerable();
       nave.tiempoEsperaInvulnerabilidad = millis();
       //cambia el color de nave
-      body1.setImageAlpha(90);
+      body1.setImageAlpha(150);
+      body1.attachImage(nave_s_fuego_golpe);
     }
 
     //cuando colisionas con la meta  y no se termino el tiempo o las vidas pasa a ganaste
@@ -362,11 +428,12 @@ void contactStarted(FContact contacto) {
       println("body1: " + body1.getName());
       println("body2: " + body2.getName());
       interfaz.num_vidas-=1;
+      vidas.remove(vidas.size() - 1); // Elimina la última imagen de vida
       // Activa la invulnerabilidad,el tiempo de espera entre activaciones es el tiempo que dura la invulnerabilidad (5s)
       nave.hacerInvulnerable();
       nave.tiempoEsperaInvulnerabilidad = millis();
-      //cambia el color de nave
-      body1.setImageAlpha(90);
+      body1.setImageAlpha(150);
+      body1.attachImage(nave_s_fuego_golpe);
     }
   }
 }
@@ -378,9 +445,10 @@ void contactEnded(FContact contacto)
   FBody body2 = contacto.getBody2();
   if (body1 != null && body2 != null)
   {
-    if (body1.getName() != null && body2.getName() != null)
+    if (body1.getName()=="Nave" && body2.getName() == "Enemigo" || body1.getName()=="Nave" && body2.getName() == "obstaculo1" )
     {
       body1.setImageAlpha(255);
+      body1.attachImage(nave_s_fuego);
     }
   }
 }

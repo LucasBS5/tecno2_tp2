@@ -38,14 +38,14 @@ class Nave {
     vidas=5;
     //imagen nave
     nave_s_fuego.resize(90, 90);
-    nave.attachImage(nave_s_fuego);
-
     //nave invulnerable el tiempo de espera entre activaciones es el tiempo que dura la invulnerabilidad (5s)
     invulnerable = false;
     tiempoInvulnerable = millis();
     //tiempo de invulnerabilidad (2 segundos)
     duracionInvulnerabilidad = 2000;
+    nave.attachImage(nave_s_fuego);
     //añadir al mundo
+
     mundo.add(nave);
   }
 
@@ -57,13 +57,24 @@ class Nave {
       angulo = radians(map(mouseX, 0, width, -130, 130));
 
       // Calcula la velocidad en el eje X basada en el ángulo
-      float  velocidadX = map(mouseX, width/2, width, -60, 60);
+      float  velocidadX = map(mouseX, width/2, width, -100, 100);
 
       // Calcula la velocidad en el eje Y basada en el movimiento vertical del mouse
       float velocidadY = map(mouseY, height / 2, height, -60, 60); // Limita el movimiento vertical al cuarto inferior
       nave.setRotation(angulo);
-     
+      //descomentar para mover con bmove
       nave.setVelocity(bx,by);
+      //descomentar para mover con mouse
+      //nave.setVelocity(velocidadX, velocidadY);
+      pop();
+      push();
+      // Aplica la saturación al fuego
+      translate(nave.getX(), nave.getY());
+      imageMode(CENTER);
+      float saturacion =( map(nave.getY(), 0, height, 255, 200));
+      tint(saturacion, 255, 255,saturacion);
+      rotate(angulo);
+      image(fuego_nave, 0, 0);
       pop();
     } else
     {
