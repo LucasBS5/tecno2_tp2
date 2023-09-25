@@ -85,7 +85,7 @@ class Interfaz {
     }
   }
 
-  void generarItem() {
+  void generarItem(float tiempo_vida) {
     int tam=20;
     int offset =150; // Ajusta el offset según tus necesidades
     if (coordenadasValidas.size() > 0) {
@@ -113,11 +113,12 @@ class Interfaz {
 
 
 
+
   void borrarItem() {
     //borrar el item
     mundo.remove(item.Item);
     //restar uno a la cantidad actual de items en pantalla
-    if (cant_items>=0) {
+    if (cant_items>0) {
       cant_items-=1;
     }
   }
@@ -126,13 +127,10 @@ class Interfaz {
 
 
   void generarEnem() {
-    int tam = 100;
-    int minX = 200;
-    int maxX = 750;
-    int minY = 550; // El cuarto inferior de la pantalla
-    int maxY = 670; // Altura máxima
-    enemigo= new Enemigo(200, 670, tam, tam, "Enemigo", minY, maxY, -0.03, 0.4);
-    enemigo1= new Enemigo(550, 550, tam, tam, "Enemigo", minY, maxY, 0.03, 0.5);
+    int tam = 50;
+    //constructor  float posX, float posY, float tam, String nombre, float minY, float maxY, float velocidadRotacion, float velocidadMovimiento
+    enemigo= new Enemigo(255, 670, tam, "Enemigo", 480, 645, -0.03, 0.4);
+    enemigo1= new Enemigo(550, 550, tam, "Enemigo", 540, 630, 0.03, 0.5);
     cant_enem += 1;
   }
 

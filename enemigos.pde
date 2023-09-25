@@ -1,21 +1,20 @@
 class Enemigo {
-  FBox enemigo1;
-  FBox enemigo;
+  FCircle enemigo;
   float minY;
   float maxY;
   float velocidadRotacion;
   float velocidadMovimiento;
   float direccion; // 1 para mover hacia abajo, -1 para mover hacia arriba
 
-  Enemigo(float posX, float posY, float tamX, float tamY, String nombre, float minY, float maxY, float velocidadRotacion, float velocidadMovimiento) {
-    enemigo = new FBox(tamX, tamY);
+  Enemigo(float posX, float posY, float tam, String nombre, float minY, float maxY, float velocidadRotacion, float velocidadMovimiento) {
+    enemigo = new FCircle(tam);
     enemigo.setPosition(posX, posY);
     enemigo.setName(nombre);
-    enemigo.setFill(255, 0, 255);
     enemigo.setGrabbable(false);
-    enemigo.setRestitution(0.2);
     conejo_motosierra.resize(100, 100);
     enemigo.attachImage(conejo_motosierra);
+    enemigo.setRestitution(0.0); 
+    //enemigo.setSensor(true);
     mundo.add(enemigo);
 
     this.minY = minY;

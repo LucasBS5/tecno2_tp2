@@ -35,6 +35,7 @@ class Nave {
     ancho = 25;
     alto = 50;
     nave.setPosition(100, height-100);
+    nave.setRestitution(0.02);
     nave.setGrabbable(false);
     fuego.setGrabbable(false);
     nave.setName("Nave");
@@ -72,9 +73,9 @@ class Nave {
       nave.setRotation(angulo);
       fuego.setRotation(angulo);
       //descomentar para mover con bmove
-      nave.addImpulse(bx, by);
+      //nave.addImpulse(bx, by);
       //descomentar para mover con mouse
-      //nave.setVelocity(velocidadX, velocidadY);
+      nave.setVelocity(velocidadX, velocidadY);
       pop();
     }
    fuego.setPosition(nave.getX(), nave.getY());

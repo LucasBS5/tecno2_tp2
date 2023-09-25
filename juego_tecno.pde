@@ -2,7 +2,10 @@ import fisica.*;
 import processing.sound.*;
 //to do list
 //calibrar trackeo de manos
+//filtrar trackeo de mov
 //hacer circulo de interfaz ?
+
+
 //EL movimiento se ajusta en la linea "nave.moverNave(averageFlow_x *10, averageFlow_y *10);]" linea 222
 //--------
 //bflow
@@ -60,7 +63,7 @@ PImage ganaste;
 PImage perdiste;
 
 //vars items
-float cant_max_items=1;
+float cant_max_items=0;
 //tiempo items
 float tiempoActual;
 float tiempoUltimaGeneracion;
@@ -266,15 +269,29 @@ void draw() {
 
     push();
     tiempoActual = millis() / 1000.0; // Tiempo actual en segundos
+    float tiempoVidaMaximoItem =5.0; // Tiempo de vida máximo de un item en segundos
     // Comprueba si ha pasado suficiente tiempo desde la última generación
     boolean  pasotiempo_generacion=tiempoActual - tiempoUltimaGeneracion >= tiempoEntreGeneraciones ;
-    if (pasotiempo_generacion && interfaz.cant_items < cant_max_items) {
-      interfaz.generarItem();
+    // si se termina el tiempo de vida del item
+    boolean pasotiempo_vida = tiempoActual - tiempoUltimaGeneracion >=tiempoVidaMaximoItem;
+    if (pasotiempo_generacion && interfaz.cant_items == cant_max_items) {
+      interfaz.generarItem(tiempoVidaMaximoItem);
+      tiempoUltimaGeneracion = tiempoActual; // Actualiza el tiempo de la última generación
+    } else if (pasotiempo_vida && interfaz.cant_items>cant_max_items) {
+      interfaz.borrarItem();
+      interfaz.generarItem(tiempoVidaMaximoItem);
       tiempoUltimaGeneracion = tiempoActual; // Actualiza el tiempo de la última generación
     }
+    
+
+
     interfaz.dibujar_Barra_T();
     interfaz.dibujar_vidas();
     pop();
+          // Llama al método mover para cada objeto Item
+  if (item!=null) {
+    item.mover();
+  }
 
     //si se acaban las vidas o el tiempo pasa al estado perdiste
     if (interfaz.num_vidas<=0 || interfaz.tiempoRestante<0) {
