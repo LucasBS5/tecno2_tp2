@@ -3,10 +3,10 @@ import processing.sound.*;
 //to do list
 //calibrar trackeo de manos
 //filtrar trackeo de mov
-//hacer circulo de interfaz ?
 
 
-//EL movimiento se ajusta en la linea "nave.moverNave(averageFlow_x *10, averageFlow_y *10);]" linea 222
+
+//EL movimiento se ajusta en la linea "nave.moverNave(averageFlow_x *10, averageFlow_y *10);]" linea 226
 //--------
 //bflow
 int PUERTO_IN_OSC = 12345; // puerto de entrada
@@ -17,6 +17,13 @@ String IP = "127.0.0.1"; // ip del BFlow
 Receptor receptor;
 
 Emisor emisor;
+
+//gestor senial
+GestorSenial gestorX;
+GestorSenial gestorY;
+float min;
+float max;
+float amortiguacion;
 
 float averageFlow_x;
 float averageFlow_y;
@@ -109,7 +116,6 @@ long tiempoEspera_gop=0;
 
 
 void setup() {
-
   //bflow
   setupOSC(PUERTO_IN_OSC, PUERTO_OUT_OSC, IP);
   receptor = new Receptor();
@@ -120,8 +126,13 @@ void setup() {
   //z= new ZonaLocal(2001, 778, 418, 300, 300);
   //emisor.addZona(z);
 
-
-
+  //gestor para filtrar captura
+  min=0.001;
+  max=0.009;
+  amortiguacion=0.002;
+  
+  gestorX= new GestorSenial( min, max, amortiguacion );
+  gestorY= new GestorSenial( min, max, amortiguacion );
 
   //inicializar libreria fisica
   Fisica.init(this);
@@ -220,10 +231,20 @@ void setup() {
 void draw() {
   //bflow
   receptor.actualizar(mensajes);
-  //pasar vars de movimiento de la zona local a la nave
+  //valor de captura x
+  gestorX.actualizar( averageFlow_x );
+  //valor de captura y
+  gestorY.actualizar( averageFlow_y );
+
+  //pasar vars de movimiento de la zona local a la nave o average para toda la pantalla
   //el *10 ajusta la sensibilidad
-  nave.moverNave(averageFlow_x *10, averageFlow_y *10);
-  //receptor.dibujarZonasRemotas(width, height);
+  //aca se puede pasar el valor del averge o de la zona local
+  nave.moverNave(averageFlow_x *20, averageFlow_y *20);
+  //o el valor de captura pero filtrado
+  //nave.moverNave(gestorX.filtradoNorm(), gestorY.filtradoNorm());
+  //o el mouseX y mouseY
+  //nave.moverNave(mouseX, mouseY);
+
   //estado incio
   if (estado=="inicio") {
     image(inicio, 0, 0);
@@ -241,6 +262,7 @@ void draw() {
   //estado jugando y pasó el tiempo de carga
   if (estado=="jugando") {
     image(fondo1, 0, 0);
+    //background(255);
     interfaz.dibuja_meteoritos();
     //Musica de fondo en loop
     winlose.stop();
@@ -282,16 +304,22 @@ void draw() {
       interfaz.generarItem(tiempoVidaMaximoItem);
       tiempoUltimaGeneracion = tiempoActual; // Actualiza el tiempo de la última generación
     }
-    
+
 
 
     interfaz.dibujar_Barra_T();
     interfaz.dibujar_vidas();
+    //pasar la misma variable que uso para nave en la captura de movimiento
+    nave.dibujar_joy(width-100, height-100, 50, averageFlow_x *20, averageFlow_y *20);
+    // o la misma variable pero filtrada
+    //nave.dibujar_joy(width-100, height-100, 50,gestorX.filtradoNorm(),gestorY.filtradoNorm());
+    //o el mouseX e y
+    //nave.dibujar_joy(width-100, height-100, 50, mouseX, mouseY);
     pop();
-          // Llama al método mover para cada objeto Item
-  if (item!=null) {
-    item.mover();
-  }
+    // Llama al método mover para cada objeto Item
+    if (item!=null) {
+      item.mover();
+    }
 
     //si se acaban las vidas o el tiempo pasa al estado perdiste
     if (interfaz.num_vidas<=0 || interfaz.tiempoRestante<0) {
@@ -369,6 +397,7 @@ void draw() {
   //BFLOW
   emisor.actualizar();
   //COMENTAR PARA NO DIBUJARLO
+  //gestorX.imprimir(width/2,height/2,400,200,true,false);
   //emisor.dibujar();
 }
 
