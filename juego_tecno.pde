@@ -3,7 +3,7 @@ import processing.sound.*;
 //to do list
 //calibrar trackeo de manos
 //hacer circulo de interfaz ?
-
+//EL movimiento se ajusta en la linea "nave.moverNave(averageFlow_x *10, averageFlow_y *10);]" linea 222
 //--------
 //bflow
 int PUERTO_IN_OSC = 12345; // puerto de entrada
@@ -84,7 +84,7 @@ Obstaculo obstaculo;
 //crear item
 Item item;
 //crear enemigo
-Enemigo enemigo, enemigo1, enemigo2;
+Enemigo enemigo, enemigo1;
 //crear interfaz
 Interfaz interfaz;
 //crear caminos
@@ -218,7 +218,8 @@ void draw() {
   //bflow
   receptor.actualizar(mensajes);
   //pasar vars de movimiento de la zona local a la nave
-  nave.moverNave(averageFlow_x * 20, averageFlow_y * 20);
+  //el *10 ajusta la sensibilidad
+  nave.moverNave(averageFlow_x *10, averageFlow_y *10);
   //receptor.dibujarZonasRemotas(width, height);
   //estado incio
   if (estado=="inicio") {
@@ -259,7 +260,6 @@ void draw() {
     if (interfaz.cant_enem>0) {
       enemigo.mover();
       enemigo1.mover();
-      enemigo2.mover();
     }
 
 

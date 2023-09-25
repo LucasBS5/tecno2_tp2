@@ -131,9 +131,8 @@ class Interfaz {
     int maxX = 750;
     int minY = 550; // El cuarto inferior de la pantalla
     int maxY = 670; // Altura máxima
-    enemigo= new Enemigo(750, 650, tam, tam, "Enemigo", minY, maxY, -0.03, 0.4);
+    enemigo= new Enemigo(200, 670, tam, tam, "Enemigo", minY, maxY, -0.03, 0.4);
     enemigo1= new Enemigo(550, 550, tam, tam, "Enemigo", minY, maxY, 0.03, 0.5);
-    enemigo2= new Enemigo(200, 670, tam, tam, "Enemigo", minY, maxY, 0.04, 0.3);
     cant_enem += 1;
   }
 
@@ -142,7 +141,6 @@ class Interfaz {
     if (enemigo != null && enemigo.enemigo != null) {
       mundo.remove(enemigo.enemigo);
       mundo.remove(enemigo1.enemigo);
-      mundo.remove(enemigo2.enemigo);
     }
     // Disminuye la cantidad actual de enemigos en pantalla
     cant_enem -= 1;
@@ -170,7 +168,7 @@ class Interfaz {
     obstaculo = new Obstaculo(534, 300, 45, "obstaculo1");
 
     //obs7
-    obstaculo = new Obstaculo(618, 20, 45, "obstaculo1");
+    //obstaculo = new Obstaculo(618, 20, 45, "obstaculo1");
 
     //obs 8
     obstaculo = new Obstaculo( 715, 105, 45, "obstaculo1");

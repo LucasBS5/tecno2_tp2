@@ -1,6 +1,5 @@
 class Enemigo {
   FBox enemigo1;
-  FBox enemigo2;
   FBox enemigo;
   float minY;
   float maxY;
