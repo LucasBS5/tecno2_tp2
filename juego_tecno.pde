@@ -1,24 +1,19 @@
 import fisica.*;
 import processing.sound.*;
 //to do list
-//trackeo de manos
-//arreglar tamaño caja de colisiones
-//hacer un impulso para alejar del enemigo u obstaculo?
-//arreglar la forma en la que se generan los items que cada uno tenga un nombre
+//calibrar trackeo de manos
 //hacer circulo de interfaz ?
-//agregar fuego a la nave
 
 //--------
 //bflow
-int PUERTO_IN_OSC = 12345;
-int PUERTO_OUT_OSC = 12346;
-String IP = "127.0.0.1";
+int PUERTO_IN_OSC = 12345; // puerto de entrada
+int PUERTO_OUT_OSC = 12346; // puerto de salida
+String IP = "127.0.0.1"; // ip del BFlow
+
 
 Receptor receptor;
 
 Emisor emisor;
-
-
 
 float averageFlow_x;
 float averageFlow_y;
@@ -26,7 +21,8 @@ float averageFlow_y;
 float totalFlow_x;
 float totalFlow_y;
 
-ZonaLocal z;
+//si quiero usar la zona local descomentar
+//ZonaLocal z;
 
 
 //crear imagenes
@@ -88,7 +84,7 @@ Obstaculo obstaculo;
 //crear item
 Item item;
 //crear enemigo
-Enemigo enemigo,enemigo1,enemigo2;
+Enemigo enemigo, enemigo1, enemigo2;
 //crear interfaz
 Interfaz interfaz;
 //crear caminos
@@ -113,14 +109,15 @@ void setup() {
 
   //bflow
   setupOSC(PUERTO_IN_OSC, PUERTO_OUT_OSC, IP);
-
-  emisor = new Emisor();
-  //p = new PuntoLocal(1001, c.getX(), c.getY() );
-  z= new ZonaLocal(2001,778,418, 300, 300);
-  emisor.addZona(z);
-
   receptor = new Receptor();
-  receptor.setZonasLocales(emisor.zonasLocales);
+  //descomentar para usar zonalocales
+  //receptor.setZonasLocales(emisor.zonasLocales);
+  emisor = new Emisor();
+  //descomentar para usar zonalocal
+  //z= new ZonaLocal(2001, 778, 418, 300, 300);
+  //emisor.addZona(z);
+
+
 
 
   //inicializar libreria fisica
@@ -220,7 +217,9 @@ void setup() {
 void draw() {
   //bflow
   receptor.actualizar(mensajes);
-
+  //pasar vars de movimiento de la zona local a la nave
+  nave.moverNave(averageFlow_x * 20, averageFlow_y * 20);
+  //receptor.dibujarZonasRemotas(width, height);
   //estado incio
   if (estado=="inicio") {
     image(inicio, 0, 0);
@@ -250,8 +249,7 @@ void draw() {
     mundo.step();
     mundo.draw();
     //nave
-    //pasar vars de movimiento de la zona local a la nave
-    nave.moverNave(z.getMovX()*20, z.getMovY()*20);
+
 
     //generar enemigos
     //aca se modifica la cantidad de enemigos que se genera
@@ -351,11 +349,10 @@ void draw() {
     }
     estado="inicio";
   }
-
   //BFLOW
   emisor.actualizar();
   //COMENTAR PARA NO DIBUJARLO
-  emisor.dibujar();
+  //emisor.dibujar();
 }
 
 void mousePressed() {
