@@ -63,7 +63,7 @@ class Nave {
     if (estado=="jugando") {
       push();
       //revisar angulo para que coincida
-      angulo = radians(map(mouseX, 0, width, -130, 130));
+      angulo = radians(map(bx, 0, width, -130, 130));
 
       // Calcula la velocidad en el eje X basada en el ángulo
       float  velocidadX = map(bx, 0, width, -100, 100);
@@ -73,9 +73,7 @@ class Nave {
       nave.setRotation(angulo);
       fuego.setRotation(angulo);
       //descomentar para mover con bmove
-      //nave.addImpulse(bx, by);
-      //descomentar para mover con mouse
-      nave.setVelocity(bx, by);
+      nave.addImpulse(bx*13, by*13);
       pop();
     }
     fuego.setPosition(nave.getX(), nave.getY());
@@ -104,12 +102,29 @@ class Nave {
 
     // Mapa para ajustar posX y posY en función de bx y by
     float distanciaMaxima = 50; // Distancia máxima de movimiento del joystick
-    float mapeo_posX = map(bx, 0, width, posX - distanciaMaxima / 2, posX + distanciaMaxima / 2);
-    float mapeo_posY = map(by, 0, height, posY - distanciaMaxima / 2, posY + distanciaMaxima / 2);
+    float mapeo_posX = map(bx*13, 0, width, posX - distanciaMaxima / 2, posX + distanciaMaxima / 2);
+    float mapeo_posY = map(by*13, 0, height, posY - distanciaMaxima / 2, posY + distanciaMaxima / 2);
+    
+  /*
+    //logica alternativa para hacer un joystick
+    boolean arriba =by>0;
+    boolean abajo =by<0;
+    boolean izquierda = bx<0;
+    boolean derecha =bx>0;
+    if (arriba) {
+      posY1++;
+    } else if (abajo) {
+      posY1--;
+    } else if (izquierda) {
+      posX2++;
+    } 
+    else if (derecha) {
+     posX2--;
+    }*/
 
     noStroke();
     fill(c);
-    ellipse(mapeo_posX, mapeo_posY, tam, tam);
+    ellipse(posX,posY, tam, tam);
     pop();
   }
 

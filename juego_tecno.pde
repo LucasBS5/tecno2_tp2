@@ -239,7 +239,7 @@ void draw() {
   //pasar vars de movimiento de la zona local a la nave o average para toda la pantalla
   //el *10 ajusta la sensibilidad
   //aca se puede pasar el valor del averge o de la zona local
-  nave.moverNave(averageFlow_x *20, averageFlow_y *20);
+  nave.moverNave(averageFlow_x, averageFlow_y);
   //o el valor de captura pero filtrado
   //nave.moverNave(gestorX.filtradoNorm(), gestorY.filtradoNorm());
   //o el mouseX y mouseY
@@ -253,10 +253,10 @@ void draw() {
     fill(200);
     text("Levanta la mano para jugar", 380, 520);
     pop();
-    //cuando se detecta una mano de este estado pasa a jugando
-    /*if(){
+    //cuando se levanta la mano 
+    if(estado!="jugando" && averageFlow_y>0.8 && !inicioCargado && millis() - tiempoInicio >= 3000){
      estado="jugando";
-     }*/
+     }
   }
 
   //estado jugando y pasó el tiempo de carga
@@ -305,12 +305,10 @@ void draw() {
       tiempoUltimaGeneracion = tiempoActual; // Actualiza el tiempo de la última generación
     }
 
-
-
     interfaz.dibujar_Barra_T();
     interfaz.dibujar_vidas();
     //pasar la misma variable que uso para nave en la captura de movimiento
-    nave.dibujar_joy(width-100, height-100, 50, averageFlow_x *20, averageFlow_y *20);
+    nave.dibujar_joy(width-100, height-100, 50, averageFlow_x, averageFlow_y);
     // o la misma variable pero filtrada
     //nave.dibujar_joy(width-100, height-100, 50,gestorX.filtradoNorm(),gestorY.filtradoNorm());
     //o el mouseX e y
@@ -401,15 +399,7 @@ void draw() {
   //emisor.dibujar();
 }
 
-void mousePressed() {
-  if (estado == "inicio" && !inicioCargado && millis() - tiempoInicio >= 3000 ) {
-    estado = "jugando";
-  }
-}
 
-void mouseReleased() {
-  // nave.mouseReleased(); // Llamar al método para manejar el mouse cuando se suelta
-}
 
 //colisones
 void contactStarted(FContact contacto) {
@@ -425,8 +415,6 @@ void contactStarted(FContact contacto) {
     {
       choqueNave.amp(0.3);
       choqueNave.play();
-      println("body1: " + body1.getName());
-      println("body2: " + body2.getName());
       //si las vidas son mayores a 0 y la nave no esta invulnerable
       //perdiste una vida
       interfaz.num_vidas-=1;
@@ -456,15 +444,9 @@ void contactStarted(FContact contacto) {
     {
       bebida.amp(0.3);
       bebida.play();
-      println("body1: " + body1.getName());
-      println("body2: " + body2.getName());
-      println("body1: " + body1.getName());
-      println("body2: " + body2.getName());
-
+   
       //para evitar que se agarren vidas una vez que se acabaron las vidas
       if (interfaz.num_vidas>0 && interfaz.tiempoRestante>0) {
-        //agarraste un item
-        println("agarraste un item");
         interfaz.borrarItem();
         //dar tiempo
         interfaz.tiempoRestante+=1;
@@ -478,8 +460,6 @@ void contactStarted(FContact contacto) {
     {
       zombies.amp(0.3);
       zombies.play();
-      println("body1: " + body1.getName());
-      println("body2: " + body2.getName());
       interfaz.num_vidas-=1;
       vidas.remove(vidas.size() - 1); // Elimina la última imagen de vida
       // Activa la invulnerabilidad,el tiempo de espera entre activaciones es el tiempo que dura la invulnerabilidad (5s)
