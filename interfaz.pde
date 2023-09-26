@@ -13,6 +13,7 @@ class Interfaz {
   //meteoritos
   ArrayList<Meteorito> meteoritos = new ArrayList<Meteorito>();
   int numMeteoritos;
+  ArrayList<PVector> sparks = new ArrayList<PVector>();
 
   Interfaz() {
     tiempoInicial = 50; // Tiempo inicial en segundos
@@ -238,4 +239,16 @@ class Interfaz {
       meteorito.mostrar();
     }
   }
+  
+  //pantalla perdiste con animación
+
+
+  
+ /*void perdiste_c_anim{
+ //imagen del fondo
+ //dibujar_sparks();
+ //imagen conejo
+ //imagen perdiste
+ }*/
+ 
 }

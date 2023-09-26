@@ -66,8 +66,12 @@ PImage soda_barra_t;
 PImage inicio;
 //imagen ganaste
 PImage ganaste;
+PImage winner;
+PImage conejo_grande;
 //imagen perdiste
 PImage perdiste;
+PImage loser;
+PImage zombie_grande;
 
 //vars items
 float cant_max_items=0;
@@ -114,7 +118,20 @@ float tiempoInicio;
 boolean esperaIniciada_gop = false;
 long tiempoEspera_gop=0;
 
-
+PImage estrella;
+//vars pantallas
+//dibujar estrellas
+ArrayList<PVector> stars;
+int numStarsX = 10; // Número de estrellas en el eje X
+int numStarsY = 5; // Número de estrellas en el eje Y
+float starSpacingX; // Espaciado entre estrellas en el eje X
+float starSpacingY; // Espaciado entre estrellas en el eje Y
+float starSize = 5; // Tamaño de las estrellas
+float starSpeed = 2; // Velocidad de movimiento
+Pantallas pantallas;
+String dirX, dirY;
+PImage bg;
+String cual;
 void setup() {
   //bflow
   setupOSC(PUERTO_IN_OSC, PUERTO_OUT_OSC, IP);
@@ -130,7 +147,7 @@ void setup() {
   min=0.001;
   max=0.009;
   amortiguacion=0.002;
-  
+
   gestorX= new GestorSenial( min, max, amortiguacion );
   gestorY= new GestorSenial( min, max, amortiguacion );
 
@@ -151,6 +168,7 @@ void setup() {
   size(1080, 720);
   //cargar imagenes
   fondo1 = loadImage("images/fondo1.png");
+  fondo1.resize(1080, 720);
   conejo_motosierra = loadImage("images/enemigo_motosierra.png");
   nave_s_fuego = loadImage("images/conejo_nave_s_fuego.png");
   nave_s_fuego_golpe = loadImage("images/conejo_nave_s_fuego_golpe.png");
@@ -183,11 +201,20 @@ void setup() {
   //imagen inicio
   inicio =  loadImage("images/inicio.jpg");
   //imagen ganaste
-  ganaste = loadImage("images/ganar.png");
+  ganaste = loadImage("images/ganar_fondo.png");
   ganaste.resize(1080, 720);
+  winner= loadImage("images/winner.png");
+  winner.resize(900,300);
+  conejo_grande=loadImage("images/conejo_g.png");
+  conejo_grande.resize(500,500);
   //imagen perdiste
-  perdiste = loadImage("images/perder.png");
+  perdiste = loadImage("images/perder_fondo.png");
   perdiste.resize(1080, 720);
+  loser= loadImage("images/game_over.png");
+  loser.resize(900,300);
+  zombie_grande= loadImage("images/enemigo_s_motosierra.png");
+  zombie_grande.resize(500,500);
+  
 
   //imagen mapa colision
   mascara = loadImage("images/mapa_colision.jpg");
@@ -226,6 +253,25 @@ void setup() {
   mundo.add(meta);
   // Guarda el tiempo actual en milisegundos.
   tiempoInicio = millis();
+
+  // dibujar estrellas
+  estrella = loadImage("images/estrella.png");
+  estrella.resize(45, 45);
+  stars = new ArrayList<PVector>();
+  starSpacingX = width / (numStarsX + 1); // Espaciado uniforme en el eje X
+  starSpacingY = height / (numStarsY + 1); // Espaciado uniforme en el eje Y
+
+  // Genera las posiciones iniciales de las estrellas con cierta aleatoriedad
+  for (int y = 0; y < numStarsY; y++) {
+    for (int x = 0; x < numStarsX; x++) {
+      float startX = (x + 1) * starSpacingX + random(-starSpacingX, starSpacingX);
+      float startY = (y + 1) * starSpacingY + random(-starSpacingY, starSpacingY);
+      stars.add(new PVector(startX, startY));
+    }
+  }
+  pantallas = new Pantallas();
+  bg=inicio;
+  cual="inicio";
 }
 
 void draw() {
@@ -245,87 +291,22 @@ void draw() {
   //o el mouseX y mouseY
   //nave.moverNave(mouseX, mouseY);
 
+  //dibujar imagenes de fondo
+  background(bg);
+  pantallas.drawStars();
+  pantallas.pantallas_dib_obj(cual);
   //estado incio
   if (estado=="inicio") {
-    image(inicio, 0, 0);
-    push();
-    textSize(30);
-    fill(200);
-    text("Levanta la mano para jugar", 380, 520);
-    pop();
-    //cuando se levanta la mano 
-    if(estado!="jugando" && averageFlow_y>0.8 && !inicioCargado && millis() - tiempoInicio >= 3000){
-     estado="jugando";
-     }
+    pantallas.inicio();
+    //cuando se levanta la mano
+    if (estado!="jugando" && averageFlow_y>0.8 && !inicioCargado && millis() - tiempoInicio >= 3000) {
+      estado="jugando";
+    }
   }
 
   //estado jugando y pasó el tiempo de carga
   if (estado=="jugando") {
-    image(fondo1, 0, 0);
-    //background(255);
-    interfaz.dibuja_meteoritos();
-    //Musica de fondo en loop
-    winlose.stop();
-    // Iniciar la música de fondo si no se está reproduciendo
-    if (!musicaFondo.isPlaying()) {
-      musicaFondo.amp(0.5);
-      musicaFondo.loop();
-    }
-    //mundo
-    mundo.step();
-    mundo.draw();
-    //nave
-
-
-    //generar enemigos
-    //aca se modifica la cantidad de enemigos que se genera
-    if (interfaz.cant_enem<=0) {
-      interfaz.generarEnem();
-    }
-    if (interfaz.cant_enem>0) {
-      enemigo.mover();
-      enemigo1.mover();
-    }
-
-
-
-    push();
-    tiempoActual = millis() / 1000.0; // Tiempo actual en segundos
-    float tiempoVidaMaximoItem =5.0; // Tiempo de vida máximo de un item en segundos
-    // Comprueba si ha pasado suficiente tiempo desde la última generación
-    boolean  pasotiempo_generacion=tiempoActual - tiempoUltimaGeneracion >= tiempoEntreGeneraciones ;
-    // si se termina el tiempo de vida del item
-    boolean pasotiempo_vida = tiempoActual - tiempoUltimaGeneracion >=tiempoVidaMaximoItem;
-    if (pasotiempo_generacion && interfaz.cant_items == cant_max_items) {
-      interfaz.generarItem(tiempoVidaMaximoItem);
-      tiempoUltimaGeneracion = tiempoActual; // Actualiza el tiempo de la última generación
-    } else if (pasotiempo_vida && interfaz.cant_items>cant_max_items) {
-      interfaz.borrarItem();
-      interfaz.generarItem(tiempoVidaMaximoItem);
-      tiempoUltimaGeneracion = tiempoActual; // Actualiza el tiempo de la última generación
-    }
-
-    interfaz.dibujar_Barra_T();
-    interfaz.dibujar_vidas();
-    //pasar la misma variable que uso para nave en la captura de movimiento
-    nave.dibujar_joy(width-100, height-100, 50, averageFlow_x, averageFlow_y);
-    // o la misma variable pero filtrada
-    //nave.dibujar_joy(width-100, height-100, 50,gestorX.filtradoNorm(),gestorY.filtradoNorm());
-    //o el mouseX e y
-    //nave.dibujar_joy(width-100, height-100, 50, mouseX, mouseY);
-    pop();
-    // Llama al método mover para cada objeto Item
-    if (item!=null) {
-      item.mover();
-    }
-
-    //si se acaban las vidas o el tiempo pasa al estado perdiste
-    if (interfaz.num_vidas<=0 || interfaz.tiempoRestante<0) {
-      estado="perdiste";
-      musicaFondo.stop();
-      winlose.amp(0.5);
-      winlose.loop();
-    }
+    pantallas.jugando();
   }
 
   //estado ganaste
@@ -335,7 +316,7 @@ void draw() {
       tiempoEspera_gop = millis();
       esperaIniciada_gop = true;
       //la imagen de ganaste
-      image(ganaste, 0, 0);
+      pantallas.ganaste();
     }
 
     // Verifica si ha pasado el tiempo deseado (por ejemplo, 3000 milisegundos, es decir, 3 segundos)
@@ -345,15 +326,15 @@ void draw() {
       estado = "reinicio";
     }
   }
+
+
   if (estado=="perdiste") {
     if (!esperaIniciada_gop) {
       // Si la espera no se ha iniciado, configura el tiempo de espera y marca que se ha iniciado
       tiempoEspera_gop = millis();
       esperaIniciada_gop = true;
-      //la imagen de ganaste
-      image(perdiste, 0, 0);
+      pantallas.perdiste();
     }
-
     // Verifica si ha pasado el tiempo deseado (por ejemplo, 3000 milisegundos, es decir, 3 segundos)
     if (millis() - tiempoEspera_gop >= 3000) {
       // Reinicia las variables y cambia al estado "inicio"
@@ -363,40 +344,15 @@ void draw() {
   }
   // cuando pasa x cantidad de tiempo de este estado pasa a inicio
   if (estado=="reinicio") {
-    //interfaz
-    interfaz.tiempoInicial=50;
-    interfaz.tiempoRestante = interfaz.tiempoInicial; // Tiempo restante en segundos
-    interfaz.barraAnchoInicial = 400;
-    interfaz.num_vidas=5;
-
-    //nave
-    //quizas resetear el angulo?
-    nave.nave.setVelocity(0, 0);
-    nave.nave.setPosition(100, height-100);
-    // Reinicia las variables y cambia al estado "inicio"
-    esperaIniciada_gop = false;
-    tiempoEspera_gop=0;
-
-    //restear items y enemigos
-    interfaz.borrarItem();
-    interfaz.cant_items=0;
-    // Restablecer tiempo de última generación
-    tiempoUltimaGeneracion = tiempoActual;
-    interfaz.borrarEnem();
-    //borra las imagenes
-    // Borra todas las imágenes del ArrayList
-    vidas.clear();
-    // Vuelve a agregar la cantidad inicial de imágenes de vida al arreglo
-    for (int i = 0; i < 5; i++) {
-      vidas.add(vidaImage.copy());
-    }
-    estado="inicio";
+    pantallas.reincio();
   }
   //BFLOW
   emisor.actualizar();
   //COMENTAR PARA NO DIBUJARLO
   //gestorX.imprimir(width/2,height/2,400,200,true,false);
   //emisor.dibujar();
+  //dibujar estrellas
+  pantallas.moveStars(dirX, dirY);
 }
 
 
@@ -431,11 +387,6 @@ void contactStarted(FContact contacto) {
     //cuando colisionas con la meta  y no se termino el tiempo o las vidas pasa a ganaste
     if (body1.getName() == "Nave" && body2.getName() == "meta" && interfaz.num_vidas>0 && interfaz.tiempoRestante>0 ) {
       estado="ganaste";
-      musicaFondo.stop();
-      winlose.amp(0.5);
-      winlose.loop();
-      aplausos.amp(0.3);
-      aplausos.play();
     }
 
 
@@ -444,7 +395,7 @@ void contactStarted(FContact contacto) {
     {
       bebida.amp(0.3);
       bebida.play();
-   
+
       //para evitar que se agarren vidas una vez que se acabaron las vidas
       if (interfaz.num_vidas>0 && interfaz.tiempoRestante>0) {
         interfaz.borrarItem();
