@@ -12,15 +12,11 @@ class Pantallas {
     //cambiar direccion de las estrellas
     dirX="no";
     dirY="ar";
-    push();
-    textSize(35);
-    fill(220);
-    text("Levanta la mano para jugar", 380, 520);
-    pop();
   }
 
   void jugando() {
     bg=fondo1;
+    cual="jugando";
     //background(255);
     interfaz.dibuja_meteoritos();
     //Musica de fondo en loop
@@ -143,15 +139,25 @@ class Pantallas {
     estado="inicio";
   }
 
-
+  void texto_anim(float textOpacity) {
+    push();
+    textSize(30);
+    fill(220, textOpacity); // Aplica la opacidad
+    text("Levanta la mano para jugar", 380, 500);
+    pop();
+  }
 
   void pantallas_dib_obj(String cual) {
     //inicio
     if (cual=="inicio") {
+      drawStars();
+      //logo con cuadrado
+      texto_anim(textOpacity = map(sin(frameCount * 0.05), -1, 1, 100, 255));
     }
 
     //ganaste
     if (cual=="ganaste") {
+       drawStars();
       push();
       imageMode(CENTER);
       image(winner, width/2, height/4);
@@ -160,6 +166,7 @@ class Pantallas {
     }
     //perdiste
     if (cual=="perdiste") {
+      drawStars();
       push();
       imageMode(CENTER);
       image(loser, width/2, height/4);

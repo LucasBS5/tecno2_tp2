@@ -104,23 +104,6 @@ class Nave {
     float distanciaMaxima = 50; // Distancia máxima de movimiento del joystick
     float mapeo_posX = map(bx*13, 0, width, posX - distanciaMaxima / 2, posX + distanciaMaxima / 2);
     float mapeo_posY = map(by*13, 0, height, posY - distanciaMaxima / 2, posY + distanciaMaxima / 2);
-    
-  /*
-    //logica alternativa para hacer un joystick
-    boolean arriba =by>0;
-    boolean abajo =by<0;
-    boolean izquierda = bx<0;
-    boolean derecha =bx>0;
-    if (arriba) {
-      posY1++;
-    } else if (abajo) {
-      posY1--;
-    } else if (izquierda) {
-      posX2++;
-    } 
-    else if (derecha) {
-     posX2--;
-    }*/
 
     noStroke();
     fill(c);
