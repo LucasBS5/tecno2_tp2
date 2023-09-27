@@ -132,6 +132,8 @@ Pantallas pantallas;
 String dirX, dirY;
 PImage bg;
 String cual;
+// Animación del texto
+float textOpacity; // Variable para controlar la opacidad del texto
 void setup() {
   //bflow
   setupOSC(PUERTO_IN_OSC, PUERTO_OUT_OSC, IP);
@@ -204,17 +206,17 @@ void setup() {
   ganaste = loadImage("images/ganar_fondo.png");
   ganaste.resize(1080, 720);
   winner= loadImage("images/winner.png");
-  winner.resize(900,300);
+  winner.resize(900, 300);
   conejo_grande=loadImage("images/conejo_g.png");
-  conejo_grande.resize(500,500);
+  conejo_grande.resize(500, 500);
   //imagen perdiste
   perdiste = loadImage("images/perder_fondo.png");
   perdiste.resize(1080, 720);
   loser= loadImage("images/game_over.png");
-  loser.resize(900,300);
+  loser.resize(900, 300);
   zombie_grande= loadImage("images/enemigo_s_motosierra.png");
-  zombie_grande.resize(500,500);
-  
+  zombie_grande.resize(500, 500);
+
 
   //imagen mapa colision
   mascara = loadImage("images/mapa_colision.jpg");
@@ -256,7 +258,7 @@ void setup() {
 
   // dibujar estrellas
   estrella = loadImage("images/estrella.png");
-  estrella.resize(45, 45);
+  estrella.resize(35, 35);
   stars = new ArrayList<PVector>();
   starSpacingX = width / (numStarsX + 1); // Espaciado uniforme en el eje X
   starSpacingY = height / (numStarsY + 1); // Espaciado uniforme en el eje Y
@@ -293,7 +295,6 @@ void draw() {
 
   //dibujar imagenes de fondo
   background(bg);
-  pantallas.drawStars();
   pantallas.pantallas_dib_obj(cual);
   //estado incio
   if (estado=="inicio") {
