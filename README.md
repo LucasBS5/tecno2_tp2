@@ -1,5 +1,6 @@
 INTEGRANTES:
+
 -Busnelli, Lucas
--Almachy Josselyn
--Garcia Cueva Cristian
--Fazio Giulliana
+-Garcia Cueva, Cristian
+-Almachy, Josselyn
+-Fazio, Giulliana
