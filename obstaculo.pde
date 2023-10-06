@@ -10,7 +10,7 @@ FCircle obstaculo;
     obstaculo.setSensor(true);
     obstaculo.setStatic(true);
     //rebote
-    obstaculo.setRestitution(0.2);
+    //obstaculo.setRestitution(0.2);
     obstaculo.setGrabbable(false);
     //imagen obstaculo
     obstaculo.attachImage(obstaculo_img);

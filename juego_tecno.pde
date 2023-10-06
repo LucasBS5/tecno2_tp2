@@ -1,13 +1,24 @@
 import fisica.*;
 import processing.sound.*;
-//to do list
-//calibrar trackeo de manos
-//filtrar trackeo de mov
+//TO DO LIST 
+//borrar bflow
+//cambiar metodo de captura  a bblob punto mas brillante 
+//replicar mecanica de angry birds
+//achicar tuneles 
+//revisar pantallas de ganaste y perdiste
 
+// para calibrar imprimir gestor de señal
+//para minimo moverme lo minimo posible y lo  mismo para el maximo  moverme lo maximo
 
+// mejor captura de punto mas brillante con blob tacker filtrado con gestor
 
-//EL movimiento se ajusta en la linea "nave.moverNave(averageFlow_x *10, averageFlow_y *10);]" linea 226
-//--------
+//la densidad hace las cosas mas pesadas se podria probar con la nave
+
+//fuente
+PFont miFuente;
+//fuente normal
+PFont fuente_normal;
+
 //bflow
 int PUERTO_IN_OSC = 12345; // puerto de entrada
 int PUERTO_OUT_OSC = 12346; // puerto de salida
@@ -31,15 +42,16 @@ float averageFlow_y;
 float totalFlow_x;
 float totalFlow_y;
 
-//si quiero usar la zona local descomentar
-//ZonaLocal z;
 
 
 //crear imagenes
-PImage conejo_motosierra;
-//obstaculo
+PImage zombie1;
+PImage zombie2;
+PImage[] imagenesNaveDanada = new PImage[4];
+
 PImage obstaculo_img;
-PImage nave_s_fuego;
+PImage hover_d;
+PImage hover_t;
 PImage fuego_nave;
 PImage nave_s_fuego_golpe;
 //fuego nave
@@ -64,14 +76,22 @@ PImage soda_barra_t;
 //imagenes estados
 //imagen inicio
 PImage inicio;
+PImage logoccuadrado;
+
 //imagen ganaste
+//fondo
 PImage ganaste;
-PImage winner;
-PImage conejo_grande;
+//manchas
+PImage manchas_ganaste;
+//conejo con letras ganaste
+PImage conejoyletras;
+
+
 //imagen perdiste
 PImage perdiste;
-PImage loser;
-PImage zombie_grande;
+PImage manchas_perdiste;
+//zombie con letras ganaste
+PImage zombieyletras;
 
 //vars items
 float cant_max_items=0;
@@ -119,6 +139,8 @@ boolean esperaIniciada_gop = false;
 long tiempoEspera_gop=0;
 
 PImage estrella;
+PImage estrella_ganaste;
+PImage estrella_perdiste;
 //vars pantallas
 //dibujar estrellas
 ArrayList<PVector> stars;
@@ -131,10 +153,12 @@ float starSpeed = 2; // Velocidad de movimiento
 Pantallas pantallas;
 String dirX, dirY;
 PImage bg;
-String cual;
 // Animación del texto
 float textOpacity; // Variable para controlar la opacidad del texto
+
 void setup() {
+  miFuente = createFont("CapricaScriptPersonalUse.ttf", 30); // Reemplaza "NombreDeTuFuente.ttf" con el nombre real de tu archivo de fuente y ajusta el tamaño.
+  fuente_normal = createFont("Helvetica-Bold.ttf", 30); // Reemplaza "NombreDeTuFuente.ttf" con el nombre real de tu archivo de fuente y ajusta el tamaño.
   //bflow
   setupOSC(PUERTO_IN_OSC, PUERTO_OUT_OSC, IP);
   receptor = new Receptor();
@@ -146,9 +170,12 @@ void setup() {
   //emisor.addZona(z);
 
   //gestor para filtrar captura
-  min=0.001;
-  max=0.009;
-  amortiguacion=0.002;
+  //el movimiento minimo que no se considere ruido
+  min=0.7;
+  //el valor maximo
+  max=0.15;
+  //0.99 mucha amortiguacion 0.1 poca amortiguacion
+  amortiguacion=0.9;
 
   gestorX= new GestorSenial( min, max, amortiguacion );
   gestorY= new GestorSenial( min, max, amortiguacion );
@@ -171,14 +198,19 @@ void setup() {
   //cargar imagenes
   fondo1 = loadImage("images/fondo1.png");
   fondo1.resize(1080, 720);
-  conejo_motosierra = loadImage("images/enemigo_motosierra.png");
-  nave_s_fuego = loadImage("images/conejo_nave_s_fuego.png");
-  nave_s_fuego_golpe = loadImage("images/conejo_nave_s_fuego_golpe.png");
-  nave_s_fuego_golpe.resize(90, 90);
+  zombie1 = loadImage("images/zombie1.png");
+  zombie2 = loadImage("images/zombie2.png");
+  for (int i = 0; i < 4; i++) {
+    imagenesNaveDanada[i] = loadImage("images/conejo_nave_s_fuego" + i  + ".png");
+    imagenesNaveDanada[i].resize(110, 110);
+  }
+
   fuego_nave = loadImage("images/nave_c_fuego.png");
   fuego_nave.resize(185, 185);
   //obstaculo img
   obstaculo_img= loadImage("images/img_obstaculo.png");
+  hover_d=loadImage("images/hover_d.png");
+  hover_t=loadImage("images/hover_t.png");
   //fuego
   //soda
   soda = loadImage("images/soda.png");
@@ -201,21 +233,22 @@ void setup() {
 
   //imagenes estados
   //imagen inicio
-  inicio =  loadImage("images/inicio.jpg");
+  inicio =  loadImage("images/inicio1.jpg");
+  logoccuadrado = loadImage("images/cuadrado_y_logo.png");
+
   //imagen ganaste
   ganaste = loadImage("images/ganar_fondo.png");
   ganaste.resize(1080, 720);
-  winner= loadImage("images/winner.png");
-  winner.resize(900, 300);
-  conejo_grande=loadImage("images/conejo_g.png");
-  conejo_grande.resize(500, 500);
+  manchas_ganaste = loadImage("images/manchas_ganaste.png");
+  conejoyletras = loadImage("images/conejoyletras.png");
+
   //imagen perdiste
   perdiste = loadImage("images/perder_fondo.png");
   perdiste.resize(1080, 720);
-  loser= loadImage("images/game_over.png");
-  loser.resize(900, 300);
-  zombie_grande= loadImage("images/enemigo_s_motosierra.png");
-  zombie_grande.resize(500, 500);
+  manchas_perdiste= loadImage("images/manchas_perdiste.png");
+  //zombie con letras ganaste
+  zombieyletras= loadImage("images/zombieyletras.png");
+
 
 
   //imagen mapa colision
@@ -257,8 +290,12 @@ void setup() {
   tiempoInicio = millis();
 
   // dibujar estrellas
-  estrella = loadImage("images/estrella.png");
-  estrella.resize(35, 35);
+  estrella = loadImage("images/burbuja.png");
+  estrella.resize(20, 20);
+  estrella_ganaste = loadImage("images/estrella_ganaste.png");
+  estrella_ganaste.resize(30, 40);
+  estrella_perdiste = loadImage("images/estrella_perdiste.png");
+  estrella_perdiste.resize(30, 40);
   stars = new ArrayList<PVector>();
   starSpacingX = width / (numStarsX + 1); // Espaciado uniforme en el eje X
   starSpacingY = height / (numStarsY + 1); // Espaciado uniforme en el eje Y
@@ -273,7 +310,6 @@ void setup() {
   }
   pantallas = new Pantallas();
   bg=inicio;
-  cual="inicio";
 }
 
 void draw() {
@@ -285,22 +321,24 @@ void draw() {
   gestorY.actualizar( averageFlow_y );
 
   //pasar vars de movimiento de la zona local a la nave o average para toda la pantalla
-  //el *10 ajusta la sensibilidad
   //aca se puede pasar el valor del averge o de la zona local
-  nave.moverNave(averageFlow_x, averageFlow_y);
+ nave.moverNave(averageFlow_x, averageFlow_y);
+
   //o el valor de captura pero filtrado
   //nave.moverNave(gestorX.filtradoNorm(), gestorY.filtradoNorm());
+
   //o el mouseX y mouseY
   //nave.moverNave(mouseX, mouseY);
 
   //dibujar imagenes de fondo
   background(bg);
-  pantallas.pantallas_dib_obj(cual);
+  pantallas.pantallas_dib_obj(estado);
+  pantallas.animar_pantallas(estado, sin(frameCount *0.1));
   //estado incio
   if (estado=="inicio") {
     pantallas.inicio();
     //cuando se levanta la mano
-    if (estado!="jugando" && averageFlow_y>0.8 && !inicioCargado && millis() - tiempoInicio >= 3000) {
+    if (estado!="jugando" && averageFlow_y>0.5 && !inicioCargado && millis() - tiempoInicio >= 3000) {
       estado="jugando";
     }
   }
@@ -351,7 +389,6 @@ void draw() {
   emisor.actualizar();
   //COMENTAR PARA NO DIBUJARLO
   //gestorX.imprimir(width/2,height/2,400,200,true,false);
-  //emisor.dibujar();
   //dibujar estrellas
   pantallas.moveStars(dirX, dirY);
 }
@@ -380,9 +417,7 @@ void contactStarted(FContact contacto) {
       // Activa la invulnerabilidad,el tiempo de espera entre activaciones es el tiempo que dura la invulnerabilidad (5s)
       nave.hacerInvulnerable();
       nave.tiempoEsperaInvulnerabilidad = millis();
-      //cambia el color de nave
-      body1.setImageAlpha(150);
-      body1.attachImage(nave_s_fuego_golpe);
+      pantallas.damage=true;
     }
 
     //cuando colisionas con la meta  y no se termino el tiempo o las vidas pasa a ganaste
@@ -402,6 +437,7 @@ void contactStarted(FContact contacto) {
         interfaz.borrarItem();
         //dar tiempo
         interfaz.tiempoRestante+=1;
+        interfaz.sume_tiempo=true;
       }
     }
 
@@ -417,8 +453,8 @@ void contactStarted(FContact contacto) {
       // Activa la invulnerabilidad,el tiempo de espera entre activaciones es el tiempo que dura la invulnerabilidad (5s)
       nave.hacerInvulnerable();
       nave.tiempoEsperaInvulnerabilidad = millis();
-      body1.setImageAlpha(150);
-      body1.attachImage(nave_s_fuego_golpe);
+      pantallas.damage=true;
+      nave.incrementarDanio();
     }
   }
 }
@@ -432,8 +468,7 @@ void contactEnded(FContact contacto)
   {
     if (body1.getName()=="Nave" && body2.getName() == "Enemigo" || body1.getName()=="Nave" && body2.getName() == "obstaculo1" )
     {
-      body1.setImageAlpha(255);
-      body1.attachImage(nave_s_fuego);
+      pantallas.damage=false;
     }
   }
 }

@@ -1,6 +1,21 @@
 class Pantallas {
-
+  boolean damage;
+  //mover cosas
+  float movimiento;
+  //inicio
+  float mover_inicio;
+  //ganaste
+  float mover_ganaste;
+  //perdiste
+  float mover_perdiste;
   Pantallas() {
+    damage=false;
+    //inicio
+    mover_inicio=0;
+    //ganaste
+    mover_ganaste = 0;
+    //perdiste
+    mover_perdiste = 0;
   }
 
 
@@ -8,7 +23,6 @@ class Pantallas {
   //pantalla inicio
   void inicio() {
     bg=inicio;
-    cual="inicio";
     //cambiar direccion de las estrellas
     dirX="no";
     dirY="ar";
@@ -16,8 +30,6 @@ class Pantallas {
 
   void jugando() {
     bg=fondo1;
-    cual="jugando";
-    //background(255);
     interfaz.dibuja_meteoritos();
     //Musica de fondo en loop
     winlose.stop();
@@ -60,12 +72,12 @@ class Pantallas {
 
     interfaz.dibujar_Barra_T();
     interfaz.dibujar_vidas();
-    //pasar la misma variable que uso para nave en la captura de movimiento
-    nave.dibujar_joy(width-100, height-100, 50, averageFlow_x, averageFlow_y);
-    // o la misma variable pero filtrada
-    //nave.dibujar_joy(width-100, height-100, 50,gestorX.filtradoNorm(),gestorY.filtradoNorm());
+    //pasar la misma variable pero filtrada
+    //nave.dibujar_joy(width-100, height-100, 50, gestorX.filtradoNorm(), gestorY.filtradoNorm());
+    // o pasar el trackeo de mov en crudo
+    //nave.dibujar_joy(width-100, height-100, 50,avergeFlow_x,avergeFlow_y);
     //o el mouseX e y
-    //nave.dibujar_joy(width-100, height-100, 50, mouseX, mouseY);
+    nave.dibujar_joy(width-100, height-100, 50, mouseX, mouseY);
     pop();
     // Llama al método mover para cada objeto Item
     if (item!=null) {
@@ -76,12 +88,14 @@ class Pantallas {
     if (interfaz.num_vidas<=0 || interfaz.tiempoRestante<0) {
       estado="perdiste";
     }
+    if (damage) {
+      image(hover_d, 0, 0);
+    }
   }
 
   //pantalla perdiste
   void perdiste() {
     bg=perdiste;
-    cual="perdiste";
     dirX="i";
     dirY="ab";
     //audio
@@ -93,7 +107,6 @@ class Pantallas {
   //pantalla ganaste
   void ganaste() {
     bg=ganaste;
-    cual="ganaste";
     dirX="d";
     dirY="ar";
     //audio
@@ -108,15 +121,15 @@ class Pantallas {
   void reincio() {
     //fondo y objs pantallas perdiste y ganaste
     bg=inicio;
-    cual="inicio";
     //interfaz
     interfaz.tiempoInicial=50;
     interfaz.tiempoRestante = interfaz.tiempoInicial; // Tiempo restante en segundos
     interfaz.barraAnchoInicial = 400;
     interfaz.num_vidas=5;
+    nave.nivelDeDanio=0;
+    nave.nave.attachImage(imagenesNaveDanada[nave.nivelDeDanio]);
 
     //nave
-    //quizas resetear el angulo?
     nave.nave.setVelocity(0, 0);
     nave.nave.setPosition(100, height-100);
     // Reinicia las variables y cambia al estado "inicio"
@@ -139,39 +152,58 @@ class Pantallas {
     estado="inicio";
   }
 
-  void texto_anim(float textOpacity) {
-    push();
-    textSize(30);
-    fill(220, textOpacity); // Aplica la opacidad
-    text("Levanta la mano para jugar", 380, 500);
-    pop();
+  //animaciones pantallas
+  void animar_pantallas(String cual, float movimiento) {
+    float posicion_actual = 0;
+    // Asegúrate de que el logo no se salga de la pantalla
+    mover_inicio = constrain(mover_inicio, 0, height - logoccuadrado.height);
+
+    if (cual=="inicio") {
+      // Aplicar interpolación lineal (lerp) para suavizar el movimiento
+      posicion_actual = lerp(posicion_actual, mover_inicio, 0.4);
+      // Actualiza la posición del icono cuadrado y el texto
+      mover_inicio += movimiento *0.4;
+    }
+    //ganaste
+    if (cual=="ganaste") {
+      //mover cosas en la pantalla ganaste
+    }
+    //perdiste
+    if (cual=="perdiste") {
+      //mover cosas en la pantalla perdiste
+    }
   }
 
   void pantallas_dib_obj(String cual) {
-    //inicio
+
     if (cual=="inicio") {
       drawStars();
+      textOpacity = map(sin(frameCount * 0.05), -1, 1, 70, 255);
+
+      push();
       //logo con cuadrado
-      texto_anim(textOpacity = map(sin(frameCount * 0.05), -1, 1, 100, 255));
+      imageMode(CENTER);
+      image(logoccuadrado, width/2, height/2);
+      textAlign(CENTER);
+      textFont(miFuente);
+      fill(220, textOpacity); // Aplica la opacidad
+      text("Levanta la mano para jugar", width/2, height/4.5*3.5+mover_inicio);
+      pop();
     }
 
     //ganaste
     if (cual=="ganaste") {
-       drawStars();
-      push();
-      imageMode(CENTER);
-      image(winner, width/2, height/4);
-      image(conejo_grande, width/2, height/2+150);
-      pop();
+      //manchas
+      image(manchas_ganaste, 0, 0);
+      drawStars();
+      image(conejoyletras, 0, 0);
     }
+    
     //perdiste
     if (cual=="perdiste") {
+      image(manchas_perdiste, 0, 0);
       drawStars();
-      push();
-      imageMode(CENTER);
-      image(loser, width/2, height/4);
-      image(zombie_grande, width/2, height/2+150);
-      pop();
+      image(zombieyletras, 0, 0);
     }
   }
 
@@ -245,8 +277,12 @@ class Pantallas {
   // Función para dibujar las estrellas
   void drawStars() {
     for (PVector star : stars) {
-      if (estado != "jugando") {
+      if (estado != "jugando" && estado=="inicio") {
         image(estrella, star.x, star.y);
+      } else if (estado=="ganaste") {
+        image(estrella_ganaste, star.x, star.y);
+      } else if (estado=="perdiste") {
+        image(estrella_perdiste, star.x, star.y);
       }
     }
   }

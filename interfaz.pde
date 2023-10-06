@@ -7,7 +7,8 @@ class Interfaz {
   int num_vidas;
   int cant_items;
   int cant_enem;
-
+  //texto item
+  float contador_mensaje;
   //vector posiciones validas para generar
   ArrayList<PVector> coordenadasValidas = new ArrayList<PVector>();
   //meteoritos
@@ -15,18 +16,32 @@ class Interfaz {
   int numMeteoritos;
   ArrayList<PVector> sparks = new ArrayList<PVector>();
 
+  // hover poco tiempo
+  boolean mostrarHover ; // Variable para alternar la visibilidad de la imagen hover_d
+  float lastToggleTime; // Variable para rastrear el tiempo de la última alternancia
+  float toggleInterval; // Intervalo de alternancia en segundos (ajusta según lo deseado)
+
+  //texto cuando agarras item
+  boolean sume_tiempo;
+
   Interfaz() {
     tiempoInicial = 50; // Tiempo inicial en segundos
     tiempoRestante = tiempoInicial; // Tiempo restante en segundos
     barraAnchoInicial = 400; // Ancho inicial de la barra
     text_vidas ="Vidas: ";
     num_vidas=5;
-
+    //texto item
+    contador_mensaje=0;
     //meteoritos
     numMeteoritos = 5;
     for (int i = 0; i < numMeteoritos; i++) {
       meteoritos.add(new Meteorito());
     }
+
+    // hover poco tiempo
+    mostrarHover = false; // Variable para alternar la visibilidad de la imagen hover_d
+    lastToggleTime = 0; // Variable para rastrear el tiempo de la última alternancia
+    toggleInterval = 0.5; // Intervalo de alternancia en segundos (ajusta según lo deseado)
   }
 
   void dibujar_Barra_T() {
@@ -56,7 +71,42 @@ class Interfaz {
     if (tiempoRestante >0) {
       tiempoRestante -= 1 / frameRate;
     }
+    if (tiempoRestante<15) {
+      // Verificar si ha pasado el intervalo de alternancia
+      if (millis() - lastToggleTime >= toggleInterval * 1000) {
+        // Alternar la visibilidad de la imagen
+        mostrarHover = !mostrarHover;
+        lastToggleTime = millis(); // Actualizar el tiempo de alternancia
+      }
+
+      // Mostrar la imagen hover_d si mostrarHover es verdadero
+      if (mostrarHover) {
+        image(hover_t, 0, 0);
+      }
+    }
+    //mostrar tiempo cuando agarro un item
+    //poner otra font normal textFont();
+    //poner el texto en la misma posicion que la jarra de la barra de vida
+
+    if (sume_tiempo) {
+      push();
+      textFont(fuente_normal, 25);
+      fill(255, 6, 201);
+      text("+1", barraAncho+335, soda_barra_t.height/2+10);
+      pop();
+      // Incrementar el contador del mensaje
+      contador_mensaje++;
+      // Si pasó suficiente tiempo, ocultar el mensaje 120 son dos segundos ya que son 60 fps
+      if (contador_mensaje >= 120 ) {
+        sume_tiempo = false;
+        contador_mensaje = 0; // Reiniciar el contador
+      }
+    }
   }
+
+
+  //quizas un contador
+
   //vidas
   void dibujar_vidas() {
     if (num_vidas>0 && tiempoRestante>0) {
@@ -130,8 +180,8 @@ class Interfaz {
   void generarEnem() {
     int tam = 50;
     //constructor  float posX, float posY, float tam, String nombre, float minY, float maxY, float velocidadRotacion, float velocidadMovimiento
-    enemigo= new Enemigo(255, 670, tam, "Enemigo", 480, 645, -0.03, 0.4);
-    enemigo1= new Enemigo(550, 550, tam, "Enemigo", 540, 630, 0.03, 0.5);
+    enemigo= new Enemigo(255, 670, tam, "Enemigo", 480, 645, -0.03, 0.4, zombie1);
+    enemigo1= new Enemigo(550, 550, tam, "Enemigo", 540, 630, 0.03, 0.5, zombie2);
     cant_enem += 1;
   }
 
@@ -239,16 +289,4 @@ class Interfaz {
       meteorito.mostrar();
     }
   }
-  
-  //pantalla perdiste con animación
-
-
-  
- /*void perdiste_c_anim{
- //imagen del fondo
- //dibujar_sparks();
- //imagen conejo
- //imagen perdiste
- }*/
- 
 }

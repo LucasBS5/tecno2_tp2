@@ -22,9 +22,8 @@ class Item {
     //aca se cambia el tamaño de la imagen de la soda
     soda.resize(50, 50);
     Item.attachImage(soda);
-    Item.setRestitution(0);
     Item.setSensor(true);
-    //Item.setStatic(true);
+    Item.setStatic(true);
     Item.setGrabbable(false);
     mundo.add(Item);
   }
