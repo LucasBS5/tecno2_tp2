@@ -6,14 +6,16 @@ class Enemigo {
   float velocidadMovimiento;
   float direccion; // 1 para mover hacia abajo, -1 para mover hacia arriba
 
-  Enemigo(float posX, float posY, float tam, String nombre, float minY, float maxY, float velocidadRotacion, float velocidadMovimiento) {
+  Enemigo(float posX, float posY, float tam, String nombre, float minY, float maxY, float velocidadRotacion, float velocidadMovimiento,PImage cual) {
     enemigo = new FCircle(tam);
     enemigo.setPosition(posX, posY);
     enemigo.setName(nombre);
     enemigo.setGrabbable(false);
-    conejo_motosierra.resize(100, 100);
-    enemigo.attachImage(conejo_motosierra);
+    zombie1.resize(120, 120);
+    zombie2.resize(120, 120);
+    enemigo.attachImage(cual);
     enemigo.setRestitution(0.0); 
+    enemigo.setStatic(true);
     //enemigo.setSensor(true);
     mundo.add(enemigo);
 
@@ -26,10 +28,10 @@ class Enemigo {
 
   void mover() {
     push();
-    float rotacion = velocidadRotacion * frameCount;
-    enemigo.setRotation(rotacion);
-
+   /* float rotacion = velocidadRotacion * frameCount;
+    enemigo.setRotation(rotacion);*/
     // Calcula la nueva posición en el eje Y
+    
     float nuevaY = enemigo.getY() + velocidadMovimiento * direccion;
 
     // Verifica los límites en el eje Y

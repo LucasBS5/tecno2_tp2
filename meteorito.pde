@@ -29,6 +29,7 @@ class Meteorito {
     translate(x + img.width / 2, y + img.height / 2);
     angle += random(-0.02, 0.02);
     rotate(radians(frameCount));
+    tint(255,225,255,120);
     imageMode(CENTER);
     image(img, 0, 0);
     pop();
