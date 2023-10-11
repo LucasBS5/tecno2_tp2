@@ -38,9 +38,8 @@ class Pantallas {
       musicaFondo.amp(0.5);
       musicaFondo.loop();
     }
-    //mundo
-    mundo.step();
-    mundo.draw();
+  //mundo
+  mundo.draw();
 
     //generar enemigos
     //aca se modifica la cantidad de enemigos que se genera
@@ -54,7 +53,6 @@ class Pantallas {
 
 
 
-    push();
     tiempoActual = millis() / 1000.0; // Tiempo actual en segundos
     float tiempoVidaMaximoItem =5.0; // Tiempo de vida máximo de un item en segundos
     // Comprueba si ha pasado suficiente tiempo desde la última generación
@@ -72,13 +70,8 @@ class Pantallas {
 
     interfaz.dibujar_Barra_T();
     interfaz.dibujar_vidas();
-    //pasar la misma variable pero filtrada
-    //nave.dibujar_joy(width-100, height-100, 50, gestorX.filtradoNorm(), gestorY.filtradoNorm());
-    // o pasar el trackeo de mov en crudo
-    //nave.dibujar_joy(width-100, height-100, 50,avergeFlow_x,avergeFlow_y);
-    //o el mouseX e y
-    nave.dibujar_joy(width-100, height-100, 50, mouseX, mouseY);
-    pop();
+    nave.dibujar_joy(width-100, height-100, 50, gestorX.filtradoNorm(), gestorY.filtradoNorm());
+
     // Llama al método mover para cada objeto Item
     if (item!=null) {
       item.mover();
@@ -126,12 +119,15 @@ class Pantallas {
     interfaz.tiempoRestante = interfaz.tiempoInicial; // Tiempo restante en segundos
     interfaz.barraAnchoInicial = 400;
     interfaz.num_vidas=5;
+    
     nave.nivelDeDanio=0;
+    if(nave.nave!=null){
     nave.nave.attachImage(imagenesNaveDanada[nave.nivelDeDanio]);
 
     //nave
     nave.nave.setVelocity(0, 0);
     nave.nave.setPosition(100, height-100);
+    }
     // Reinicia las variables y cambia al estado "inicio"
     esperaIniciada_gop = false;
     tiempoEspera_gop=0;
@@ -180,7 +176,7 @@ class Pantallas {
       drawStars();
       textOpacity = map(sin(frameCount * 0.05), -1, 1, 70, 255);
 
-      push();
+      pushStyle();
       //logo con cuadrado
       imageMode(CENTER);
       image(logoccuadrado, width/2, height/2);
@@ -188,7 +184,7 @@ class Pantallas {
       textFont(miFuente);
       fill(220, textOpacity); // Aplica la opacidad
       text("Levanta la mano para jugar", width/2, height/4.5*3.5+mover_inicio);
-      pop();
+      popStyle();
     }
 
     //ganaste

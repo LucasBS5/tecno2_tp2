@@ -3,6 +3,7 @@ class Camino {
   Camino(int cual) {
     if (cual==1) {
       FPoly myPoly1 = new FPoly();
+      myPoly1.setName("tunel");
       push();
       myPoly1.vertex(-540.0, -359.0);
       myPoly1.vertex(-490.0, -359.0);
@@ -95,6 +96,7 @@ class Camino {
     //poligono2
     else if (cual ==2 ) {
       FPoly myPoly2 = new FPoly();
+      myPoly2.setName("tunel");
       push();
       myPoly2.vertex(-343.0, -357.0);
       myPoly2.vertex(-346.0, -324.0);
@@ -137,8 +139,9 @@ class Camino {
     }
     //poligono 3
     else if (cual ==3) {
-
+      
       FPoly myPoly = new FPoly();
+      myPoly.setName("tunel");
       myPoly.vertex(-454.0, 332.0);
       myPoly.vertex(-416.0, 251.0);
       myPoly.vertex(-388.0, 245.0);

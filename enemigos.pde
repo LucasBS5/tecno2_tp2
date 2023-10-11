@@ -14,7 +14,7 @@ class Enemigo {
     zombie1.resize(120, 120);
     zombie2.resize(120, 120);
     enemigo.attachImage(cual);
-    enemigo.setRestitution(0.0); 
+    enemigo.setRestitution(0.05); 
     enemigo.setStatic(true);
     //enemigo.setSensor(true);
     mundo.add(enemigo);
@@ -28,10 +28,6 @@ class Enemigo {
 
   void mover() {
     push();
-   /* float rotacion = velocidadRotacion * frameCount;
-    enemigo.setRotation(rotacion);*/
-    // Calcula la nueva posición en el eje Y
-    
     float nuevaY = enemigo.getY() + velocidadMovimiento * direccion;
 
     // Verifica los límites en el eje Y

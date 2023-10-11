@@ -167,7 +167,9 @@ class Interfaz {
 
   void borrarItem() {
     //borrar el item
+    if(item.Item!=null){
     mundo.remove(item.Item);
+    }
     //restar uno a la cantidad actual de items en pantalla
     if (cant_items>0) {
       cant_items-=1;

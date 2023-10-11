@@ -1,30 +1,23 @@
-import oscP5.*; 
-import netP5.*; // librería para envio de mensajes
-
-
+import oscP5.*;
 OscP5 osc;
-NetAddress myRemoteLocation;
 
 OscProperties propiedadesOSC;
 
-ArrayList <OscMessage> mensajes;
+ArrayList <OscMessage> mensajes; // lista de mensajes entrantes
 
-void setupOSC( int puertoIn, int puertoOut, String ip) {
+void setupOSC( int puerto) {
 
-  // in
+
   propiedadesOSC = new OscProperties();
 
   propiedadesOSC.setDatagramSize(10000);
-  propiedadesOSC.setListeningPort(puertoIn);
+  propiedadesOSC.setListeningPort(puerto);
   osc = new OscP5(this, propiedadesOSC);
 
   mensajes = new ArrayList<OscMessage>();
-  
-  // out
-  myRemoteLocation = new NetAddress(ip, puertoOut);
+
 }
 
 void oscEvent (OscMessage m) {
-
   mensajes.add(m);
 }

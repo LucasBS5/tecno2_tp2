@@ -1,7 +1,5 @@
 
 class Nave {
-
-
   FBox nave;
   FBox fuego;
   float  velocidadX;
@@ -52,23 +50,38 @@ class Nave {
   }
 
 
-  void moverNave(float bx, float by) {
-    if (estado=="jugando") {
 
-      
-      /*//con trackeo si estuviese normalizado
-      velocidadX = map(bx, 0, 1, 0, 5);
-      velocidadY = map(by, 0, 1, 0, 5);*/
-      
+
+
+  void moverNave(float bx,float by) {
+    if (estado == "jugando") {
+      velocidadX= map(bx, 0, 1, -100, 100);
+      //velocidadY = map(by, 0, 1, -100, 100);
+      // Aplicar gravedad (simulando caída)
+      float gravedad = 2;
+      velocidadY += gravedad;
+
+      // Detecta el swipe hacia arriba
+      float swipeThreshold = 0.01; // Umbral para considerar un swipe
+      if (by <ultimaPosicionBY - swipeThreshold) {
+        // Se ha realizado un swipe hacia arriba, aplica un impulso hacia arriba
+        velocidadY = -70; // Ajusta la fuerza del impulso según sea necesario
+        println("arriba");
+      }
+
+      // Limitar la velocidad máxima hacia arriba para evitar que suba demasiado rápido
+      float velocidadMaximaY = -70; // Ajusta según sea necesario
+      if (velocidadY < velocidadMaximaY) {
+        velocidadY = velocidadMaximaY;
+      }
       nave.setRotation(0);
-      fuego.setRotation(0);
-      fuego.setPosition(nave.getX(), nave.getY());
-      nave.addImpulse(velocidadX, velocidadY);
-      /*comparar el valor  anterior de by con el  actual y si es menor, quiere decir que te moviste para arriba
-       por lo que se puede añadir un impulso negativo cada vez que pasado un tiempo,se mueve la mano para arriba nuevamente
-       que de alguna forma el impulso en y aumente hasta la proxima vez que se levante la mano (replicar la logica de tap del plappy birds)*/
+      // Aplicar la velocidad en el eje Y utilizando setVelocity
+      nave.setVelocity(velocidadX, velocidadY);
     }
   }
+
+
+
 
 
 
@@ -89,13 +102,13 @@ class Nave {
   void dibujar_joy(float posX, float posY, float tam, float bx, float by) {
 
     // Mapa para el color rojo: comienza en blanco (255, 255, 255) y se vuelve rojo (255, 0, 0) a medida que by aumenta
-    float mapeo_color = map(by, 0, height - 100, 1, 0);
+    float mapeo_color = map(by, 0, 1, 1, 0);
     color c = lerpColor(color(200, 200, 200), color(255, 165, 0), mapeo_color);
 
     // Mapa para ajustar posX y posY en función de bx y by
     float distanciaMaxima = 50; // Distancia máxima de movimiento del joystick
-    float mapeo_posX = map(bx, 0, width, posX - distanciaMaxima / 2, posX + distanciaMaxima / 2);
-    float mapeo_posY = map(by, 0, height, posY - distanciaMaxima / 2, posY + distanciaMaxima / 2);
+    float mapeo_posX = map(bx, 0, 1, posX - distanciaMaxima / 2, posX + distanciaMaxima / 2);
+    float mapeo_posY = map(by, 0, 1, posY - distanciaMaxima / 2, posY + distanciaMaxima / 2);
     push();
     noStroke();
     fill(c);
